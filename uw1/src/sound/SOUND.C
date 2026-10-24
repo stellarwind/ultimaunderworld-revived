@@ -226,6 +226,10 @@ unsigned char far init_sounds(void)
                 goto fail;
         }
         sound_b292 = 0;
+#ifndef __TURBOC__
+        music_on = music_ok && port_sound_enabled(1, music_on);
+        fx_on = fx_ok && port_sound_enabled(0, fx_on);
+#endif
         return 1;
 fail:
         printf("Sound system initialization failed.\n");

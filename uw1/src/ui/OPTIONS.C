@@ -236,6 +236,10 @@ void far choose_music(int row)
 {
     char leave = 1;
 
+#ifndef __TURBOC__
+    if (row == 3 || row == 4)
+        port_sound_remember(1, row == 4);
+#endif
     if (row == 4) {
         turn_music(1);
         draw_music_and_sound_page();
@@ -258,6 +262,10 @@ void far choose_sounds(int row)
 {
     char leave = 1;
 
+#ifndef __TURBOC__
+    if (row == 3 || row == 4)
+        port_sound_remember(0, row == 4);
+#endif
     if (row == 4) {
         turn_fx(1);
         draw_music_and_sound_page();

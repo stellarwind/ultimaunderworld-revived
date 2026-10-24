@@ -86,6 +86,9 @@ enum { ENH_SKIP_INTRO, ENH_WRAP_MENU, ENH_FAST_PANELS, ENH_FREE_HEADING, ENH_SUB
        ENH_STEADY_SWIMMING, ENH_COUNT };
 /* --enhance modern-keys: the key code a lone left Shift gives (ui/MOUSE.C), unused by the game */
 #define PORT_KEY_LSHIFT 0xBF
+void port_audio_set_volume(int percent);
+int port_sound_enabled(int music, int fallback);
+void port_sound_remember(int music, int enabled);
 int port_single_action_key(int scan);
 int port_single_action_read(int *code);
 void port_single_action_cancel(void);

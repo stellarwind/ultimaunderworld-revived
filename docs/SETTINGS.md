@@ -26,12 +26,15 @@ A value in the settings file that the screen cannot show (`volume=abc`, `scale=9
 
 ### Sound
 
+UW1 also remembers the in-game Music and Sound on/off choices as `music-enabled` and `effects-enabled` in its local port settings. Once chosen, they take precedence over audio toggles stored in saved games.
+
+
 | Option | What it does | Settings-file key | When | Command line |
 |---|---|---|---|---|
 | Music | The music card the game uses. UW1: None, PC speaker, Ad Lib, Sound Blaster, Sound Blaster Pro, Pro Audio Spectrum, Roland MT-32. UW2: None, Ad Lib, Sound Blaster, Sound Blaster Pro 1, Roland MT-32, Pro Audio Spectrum, Sound Blaster Pro 2 | none (`DATA\UW.CFG`) | next start | `--sound MUSIC[,SPEECH]` (kept) |
 | Speech | The speech card: None, Sound Blaster, Sound Blaster Pro, Pro Audio Spectrum | none (`DATA\UW.CFG`) | next start | `--sound MUSIC[,SPEECH]` (kept) |
 | MT-32 ROMs | The folder with your MT-32 or CM-32L ROM images, for the Roland MT-32 music. The row says "found" when the port has ROMs to use (the folder it started with, from the option, the variable, this setting or its own search, or a folder you have just chosen) and "not found" when it has none. Choosing the row opens the folder picker; a folder with no such ROMs is refused | `mt32-roms` | next start | `--mt32-roms PATH` (kept) |
-| Volume | Everything the sound cards play, 0 to 100 in steps of 10 | `volume` | at once | none |
+| Volume | Everything the sound cards play, 0 to 200% in UW1 (0 to 100% in UW2), in steps of 10. UW1 uses SDL output gain above 100% | `volume` | at once | none |
 
 The card numbers on the command line are in each port's `--help`. Choosing a card here or with `--sound` also stops the port from picking the card by itself on later starts.
 

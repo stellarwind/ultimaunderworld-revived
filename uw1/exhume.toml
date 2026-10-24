@@ -89,7 +89,7 @@ out = "port"                           # <build>/port, <build>/port-debug, <buil
 exe = "uw1port"
 backend = "sdl3"
 # No automatic input recordings, session snapshots or recording retention code in UW1.
-runtime_exclude = ["port/sys/blackbox.c"]
+runtime_exclude = ["port/sys/blackbox.c", "port/platform/sdl3/plat_sdl3.c"]
 optimise = ["3d", "gfx", "x86"]        # the translated modules, their machine and the graphics C: -O2
 extracted_by = "tools/extract.py"
 
@@ -643,6 +643,7 @@ fast = [
     ["player movement", "{python} {exhume}/tools/movecheck.py --config {config}", "port build"],
     ["weapon sway", "{python} tools/weaponswaycheck.py", "port build"],
     ["swimming camera", "{python} tools/swimmingcheck.py", "port build"],
+    ["sound preferences and gain", "{python} tools/audiocheck.py", "port build"],
     ["window placement", "{python} tools/windowcheck.py", "port build"],
     ["single action toggle", "{python} tools/singleactioncheck.py", "port build"],
     ["map notes", "{python} tools/notescheck.py --config {config}", "port build"],
@@ -661,6 +662,7 @@ full = [
     ["player movement", "{python} {exhume}/tools/movecheck.py --config {config}", "port build"],
     ["weapon sway", "{python} tools/weaponswaycheck.py", "port build"],
     ["swimming camera", "{python} tools/swimmingcheck.py", "port build"],
+    ["sound preferences and gain", "{python} tools/audiocheck.py", "port build"],
     ["window placement", "{python} tools/windowcheck.py", "port build"],
     ["single action toggle", "{python} tools/singleactioncheck.py", "port build"],
     ["map notes", "{python} tools/notescheck.py --config {config}", "port build"],

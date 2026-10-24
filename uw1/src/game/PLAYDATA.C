@@ -142,8 +142,13 @@ void far read_player_data(int fd)
     PlayerFacing = player->saved_facing;
     PlayerLevel = player->saved_level;
     PN.terrain = player->terrain;
+#ifndef __TURBOC__
+    turn_fx(port_sound_enabled(0, player->sound));
+    turn_music(port_sound_enabled(1, player->music));
+#else
     turn_fx(player->sound);
     turn_music(player->music);
+#endif
     set_graphics_level();
     newFPS(player->fps);
 }

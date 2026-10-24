@@ -6,6 +6,9 @@ For players. Each release's notes are drafted from here. Releases are tagged `uw
 
 This fork's first release, with a Windows x64 package.
 
+- **Changed:** added a global volume boost up to 200% because the original volume was perceived as too quiet. 100% remains the original volume; 200% applies 2× output gain.
+- **Fixed:** the in-game Music and Sound on/off choices now persist across restarts and take precedence over saved-game audio settings.
+
 - **New:** optional `steady-swimming` removes random camera jolts in water while keeping normal bobbing, moving sway and swimming mechanics.
 
 - **Changed:** `fast-panels` also skips the fade-out and fade-in when returning from the map to gameplay.

@@ -128,8 +128,8 @@ const struct setting port_settings[] = {
     [R_ROMS]    = { .tab = SET_TAB_SOUND, .label = "MT-32 ROMs", .kind = SET_FOLDER, .key = "mt32-roms", .restart = 1,
                     .check = roms_check, .refuse = "That folder does not hold MT-32 or CM-32L ROMs",
                     .show = roms_show },
-    [R_VOLUME]  = { .tab = SET_TAB_SOUND, .label = "Volume", .kind = SET_SLIDER, .key = "volume", .lo = 0, .hi = 100, .step = 10,
-                    .def = 100, .apply = audio_set_volume },
+    [R_VOLUME]  = { .tab = SET_TAB_SOUND, .label = "Volume", .kind = SET_SLIDER, .key = "volume", .lo = 0, .hi = 200, .step = 10,
+                    .def = 100, .apply = port_audio_set_volume },
     [R_MOUSE]   = { .tab = SET_TAB_CONTROLS, .label = "Mouse", .kind = SET_CYCLE, .key = "mouse", .names = mouse_names,
                     .stored = mouse_stored, .def = 0, .apply = apply_mouse },
     [R_LOOK]    = { .tab = SET_TAB_CONTROLS, .label = "Mouse-look speed", .kind = SET_SLIDER, .key = "look-speed", .lo = 10,
@@ -178,7 +178,7 @@ void port_settings_start(int *fullscreen, int *scale, int *aspect, int *integer_
     if (scale) *scale = settings_value(R_SCALE) + 1;
     if (aspect) *aspect = settings_value(R_ASPECT);
     if (integer_scale) *integer_scale = settings_value(R_INTEGER);
-    audio_set_volume(settings_value(R_VOLUME));
+    port_audio_set_volume(settings_value(R_VOLUME));
     mouse_look_speed(settings_value(R_LOOK));
 }
 
