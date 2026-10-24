@@ -193,9 +193,11 @@ static const char help_text[] =
     "Plays Ultima Underworld from your own copy of the game (the GOG release's UW.EXE).\n"
     "\n"
     "Game and files:\n"
-    "  --data DIR             the UW1 folder (UW.EXE, DATA, CRIT, CUTS, SOUND), or a folder\n"
-    "                         holding it or GOG's game.gog; found by itself when not given\n"
-    "                         ($UW1PORT_DATA, the last folder used, GOG's install folders)\n"
+#ifdef __EMSCRIPTEN__
+    "  --data DIR             game assets in the browser's virtual filesystem\n"
+#else
+    "  Game assets must be in UW1 beside the program (UW.EXE, DATA, CRIT, CUTS, SOUND).\n"
+#endif
     "  --home DIR             writable folder (default: uw1port-data beside the program)\n"
     "Enhancements (off by default; docs/ENHANCEMENTS.md):\n"
     "  --enhance NAME[,NAME]  turn on changes the original game does not have, kept until\n"
@@ -229,16 +231,12 @@ static const char help_text[] =
     "  --shot-at-flip K:FILE  write the screen right after the game's K-th page flip\n"
     "  --exit-after MS        quit MS milliseconds after start\n"
     "  --exit-on-halt         quit (status 3) where the port stops instead of leaving the window up\n"
-    "  --record               record the session to RECORD.OUT in the home directory (F12 ends it)\n"
     "  --input-script FILE    keys and mouse events at set times, for tests (docs/BUILDING.md)\n"
     "  --replay FILE          replay a recording instead of reading the clock, keyboard and mouse\n"
     "  --audio-wav FILE       write everything the sound cards play to a WAV file (44100 Hz)\n"
     "  --ail-log FILE         log every AIL call and driver service\n"
     "  --hw-log FILE          log every register write and MIDI byte the drivers make\n"
     "  --settings-list        print the settings screen's rows and exit\n"
-    "  --no-recording         do not record this session (by default each session's inputs go\n"
-    "                         to recordings/ in the home directory, the newest five kept, so\n"
-    "                         that a crash can be replayed)\n"
     "  -v                     trace (also UW1PORT_TRACE=1)\n"
     "  -h, --help             this list\n"
     "\n"
@@ -254,12 +252,6 @@ static void usage(int full)
     exit(2);
 }
 
-static const char not_found[] =
-    "Ultima Underworld needs the files of your own copy of the game, and none was found.\n\n"
-    "Install the game from GOG, or choose the folder that holds UW.EXE, the GOG install "
-    "folder, or the GOG app. The folder is remembered.\n\n"
-    "From a command line: uw1port --data /path/to/UW1";
-
 /* A path as an absolute one, for the settings file. */
 static const char *absolute(const char *p, char *buf, size_t n)
 {
@@ -274,24 +266,23 @@ static const char *absolute(const char *p, char *buf, size_t n)
 #endif
 }
 
-/* The game's directory when --data names none: found (sys/gamedir.c), or, with a window,
-   chosen by the user in a folder dialog. NULL if there is none. */
-static const char *find_data(const char *home, int interactive, char *buf, size_t n)
+/* Desktop assets have one fixed location. Never search the registry, remembered
+   settings, environment, working directory or CD images, and never extract a copy. */
+#ifndef __EMSCRIPTEN__
+static const char *local_data(char *buf, size_t n)
 {
-    char chosen[1024], msg[3000];
-    if (port_find_game(home, buf, n) == 0) return buf;
-    snprintf(msg, sizeof msg, "%s%s", not_found, port_game_refused());
-    if (!interactive) {
-        fprintf(stderr, "uw1port: %s\n", msg);
+    const char *base = plat_base_dir();
+    if (!base || !*base || snprintf(buf, n, "%sUW1", base) >= (int)n) {
+        fprintf(stderr, "uw1port: cannot locate the program's UW1 directory\n");
         return NULL;
     }
-    while (plat_choose_folder("Ultima Underworld: where is the game?", msg, chosen, sizeof chosen) == 0) {
-        if (port_game_in(chosen, home, buf, n) == 0) return buf;
-        snprintf(msg, sizeof msg, "%s holds no copy of Ultima Underworld that this program can use.%s\n\n%s",
-                 chosen, port_game_refused(), not_found);
+    if (port_game_dir_ok(buf) != 0) {
+        fprintf(stderr, "uw1port: put the original game files (UW.EXE, DATA, CRIT, CUTS, SOUND) in %s; UW.EXE must be the GOG release\n", buf);
+        return NULL;
     }
-    return NULL;
+    return buf;
 }
+#endif
 
 static int home_dir(const char *p)
 {
@@ -329,7 +320,7 @@ int main(int argc, char *argv[])
     const char *data = NULL, *home = NULL, *replay = NULL;
     const char *sound = NULL, *roms = NULL, *wav = NULL, *ail_log = NULL, *hw_log = NULL, *mouse = NULL;
     char mouse_buf[16];
-    int audio_device = 1, interactive, recording = 1, status;
+    int audio_device = 1, interactive, status;
     PlatConfig cfg;
     PlatHooks hooks;
     int i, dropped = 0, first_run = 0;
@@ -350,7 +341,14 @@ int main(int argc, char *argv[])
     port_trace = getenv("UW1PORT_TRACE") != NULL;
     for (i = 1; i < argc; i++) {
         const char *a = argv[i];
-        if (!strcmp(a, "--data") && i + 1 < argc) data = argv[++i];
+        if (!strcmp(a, "--data") && i + 1 < argc) {
+#ifdef __EMSCRIPTEN__
+            data = argv[++i];
+#else
+            fprintf(stderr, "uw1port: --data is not supported; put the game in UW1 beside the program\n");
+            return 1;
+#endif
+        }
         else if (!strcmp(a, "--home") && i + 1 < argc) home = argv[++i];
         else if (!strcmp(a, "--scale") && i + 1 < argc) {
             cfg.scale = atoi(argv[++i]);
@@ -371,7 +369,6 @@ int main(int argc, char *argv[])
         }
         else if (!strcmp(a, "--exit-after") && i + 1 < argc) cfg.exit_after_ms = atol(argv[++i]);
         else if (!strcmp(a, "--exit-on-halt")) exit_on_halt = 1;
-        else if (!strcmp(a, "--record")) rp_request = 1;
         else if (!strcmp(a, "--replay") && i + 1 < argc) { rp_request = 2; replay = argv[++i]; }
         else if (!strcmp(a, "--enhance") && i + 1 < argc) {
             if (!strcmp(argv[i + 1], "list")) { enh_list = 1; i++; }
@@ -387,7 +384,6 @@ int main(int argc, char *argv[])
         else if (!strcmp(a, "--mt32-roms") && i + 1 < argc) roms = argv[++i];
         else if (!strcmp(a, "--audio-wav") && i + 1 < argc) wav = argv[++i];
         else if (!strcmp(a, "--no-audio")) audio_device = 0;
-        else if (!strcmp(a, "--no-recording")) recording = 0;
         else if (!strcmp(a, "--settings-list")) settings_list = 1;
         else if (!strcmp(a, "--ail-log") && i + 1 < argc) ail_log = argv[++i];
         else if (!strcmp(a, "--hw-log") && i + 1 < argc) hw_log = argv[++i];
@@ -432,34 +428,31 @@ int main(int argc, char *argv[])
     }
     /* A player's run, as opposed to a test's: it may ask with dialogs, remembers the game's
        folder and the ROMs, and gets a sound card on its first run. */
-    interactive = !cfg.hidden && rp_request != 1 && rp_request != 2;
+    interactive = !cfg.hidden && rp_request != 2;
     if (home_dir(home)) {
         fprintf(stderr, "uw1port: cannot create the home directory %s (--home)\n", home);
         return 1;
     }
-    if (!data && !(data = find_data(home, interactive, data_buf, sizeof data_buf))) return 1;
+#ifdef __EMSCRIPTEN__
+    if (!data) data = "/game";  /* The web launcher supplies --data for its mounted assets. */
+#else
+    if (!(data = local_data(data_buf, sizeof data_buf))) return 1;
+#endif
     if (plat_files_init(data, home)) {
-        fprintf(stderr, "uw1port: %s is not a directory (give the UW1 directory with --data)\n", data);
+        fprintf(stderr, "uw1port: %s is not a readable game directory\n", data);
         return 1;
     }
     if (plat_resolve("UW.EXE", PLAT_READ, exe, sizeof exe) || port_load_exe(exe)) {
         if (interactive)
             plat_message(1, "Ultima Underworld: the game cannot start",
                          "The folder given does not hold the GOG release's UW.EXE, which this program "
-                         "needs. Run it without --data to find or choose the game's folder.");
+                         "needs. Put the original game files in UW1 beside the program.");
         return 1;
     }
-    if (interactive) port_config_set(home, "data", absolute(data, abs_buf, sizeof abs_buf));
     if (mouse && interactive) port_config_set(home, "mouse", mouse);
     else if (!mouse && port_config_get(home, "mouse", mouse_buf, sizeof mouse_buf) == 0)
         mouse = mouse_buf;
     cfg.mouse_lock = mouse && !strcmp(mouse, "lock");
-    {
-        /* the display options, the volume and mouse-look's speed are read below, as the settings
-           screen reads them (settings_init) */
-        char v[16];
-        if (port_config_get(home, "recording", v, sizeof v) == 0 && !strcmp(v, "0")) recording = 0;
-    }
     {
         /* the MT-32 ROMs (Exhume's sound/mt32roms.c): --mt32-roms (a folder, or a file in it),
            $UW1PORT_MT32_ROMS, the remembered setting, else a search of the home, the game, the
@@ -530,8 +523,8 @@ int main(int argc, char *argv[])
         if (first_run) port_config_set(home, "sound-auto", strcmp(sound, "3,1") ? "0" : "1");
     }
     vga_window_init();
-    if (rp_request != 1 && rp_request != 2) rp_request = 0;   /* the port reads the world */
-    if (interactive && recording && rp_request == 0) port_blackbox_start(home);
+    /* Session recording is not supported. Only an explicit developer replay enables hooks. */
+    rp_request = replay ? 2 : 0;
     if (replay && copy_to_home(replay, home, "REPLAY.IN")) return 1;
     if (sound && write_uw_cfg(sound)) return 1;
     audio_config(wav, roms, audio_device && !cfg.hidden);
@@ -577,11 +570,8 @@ int main(int argc, char *argv[])
             port_pause(1);
         }
     }
+    port_single_action_init();
     status = plat_run(&cfg, &hooks, game, NULL);
-    /* the window closed (or --exit-after) with the game still running: the recording's last
-       runs and chunks, which only the game's own exit or a fault wrote before, so that a
-       replay of it does not end at a stream it never got */
-    port_blackbox_close(0);
     if (getenv("UW1PORT_POS_LOG")) port_report_motion();
     return status;
 }

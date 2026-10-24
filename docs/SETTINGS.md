@@ -18,7 +18,7 @@ The first time you run a port, and on every start after that unless you turn it 
 
 The mouse works too: click a tab, click a row to change it, drag a slider (Volume, Mouse-look speed).
 
-Every change is written to the settings file at once. A row marked "Restart to apply" on the screen is saved but only used from the next start; the others take effect immediately. The settings file is `uw1port.cfg` or `uw2port.cfg` in `uw1port-data` or `uw2port-data` beside the program (or the folder explicitly selected with `--home DIR`). The program's folder must be writable; there is no AppData or user-profile fallback. The Game folder setting selects original assets and does not relocate writable files. The home folder also holds your saved games, so to start the port afresh rename it rather than delete it. The two sound card rows are the exception: they are kept in `DATA\UW.CFG` in the home folder, the file the original install program wrote, so they have no key.
+Every change is written to the settings file at once. A row marked "Restart to apply" on the screen is saved but only used from the next start; the others take effect immediately. The settings file is `uw1port.cfg` or `uw2port.cfg` in `uw1port-data` or `uw2port-data` beside the program (or the folder explicitly selected with `--home DIR`). The program's folder must be writable; there is no AppData or user-profile fallback. UW1 always reads original assets from `UW1` beside the program and has no Game folder setting. UW2's Game folder setting selects original assets and does not relocate writable files. The home folder also holds your saved games, so to start the port afresh rename it rather than delete it. The two sound card rows are the exception: they are kept in `DATA\UW.CFG` in the home folder, the file the original install program wrote, so they have no key.
 
 ## The options
 
@@ -63,12 +63,12 @@ One switch for each enhancement the game has, all off by default. The selected o
 
 | Option | What it does | Settings-file key | When | Command line |
 |---|---|---|---|---|
-| Game folder | The folder holding your copy of the game. A folder that is not the game is refused and the old one stays | `data` | next start | `--data DIR` (kept) |
-| Record sessions | Each session's inputs go to `recordings/` in the home folder (the newest five are kept), so a crash can be replayed | `recording` | next start | `--no-recording` (this run only) |
+| Game folder (UW2 only) | The folder holding your copy of the game. A folder that is not the game is refused and the old one stays | `data` | next start | `--data DIR` (kept) |
+| Record sessions (UW2 only) | Each session's inputs go to `recordings/` in the home folder (the newest five are kept), so a crash can be replayed | `recording` | next start | `--no-recording` (this run only) |
 | Show this at start | Opens this screen before the game starts | `settings-at-start` | next start | none |
 
 ## The command line and the file
 
 A command-line option beats the settings file for that run, and the screen shows the values the run really has. Using the screen during the run does not undo the option: `--scale 3` stays at 3 for that run even if the file says 2. Most options are for that run only and leave the file alone (`--scale`, `--no-aspect`, `--no-integer`, `--no-recording`, `--no-audio`).
 
-Five options are also remembered, as if you had set them on the screen: `--enhance` (and `--no-enhance`), `--sound`, `--mt32-roms`, `--data` and `--mouse`.
+Five options are also remembered, as if you had set them on the screen: `--enhance` (and `--no-enhance`), `--sound`, `--mt32-roms`, `--data` (UW2 only) and `--mouse`.

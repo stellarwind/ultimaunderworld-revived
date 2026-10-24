@@ -399,7 +399,11 @@ int far do_keyarray_input(void)
     c = 0;
     start = key_index = (key_index + 1) & 0x7F;
     do {
-        if (key_on[key_index]) {
+        if (key_on[key_index]
+#ifndef __TURBOC__
+            && !port_single_action_key(key_index)
+#endif
+        ) {
             if (*Shift)
                 key_index |= 0x80;
             c = Asc[key_index];
@@ -441,6 +445,13 @@ int far do_keyboard_input(char array)
     }
 #endif
     c = KEY();
+#ifndef __TURBOC__
+    /* The release action bypasses held-key scanning and already has its press modifiers. */
+    if (ENHANCED(ENH_SINGLE_ACTION_TOGGLE) && port_single_action_read(&c)) {
+        key_time = GAME_TIME();
+        return c;
+    }
+#endif
     if (array)
         c = do_keyarray_input();
     c &= 0xFF;

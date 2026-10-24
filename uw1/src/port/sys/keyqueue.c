@@ -18,6 +18,7 @@
 #include <stdatomic.h>
 #include <string.h>
 #include "port.h"
+#include "sys/enhance.h"
 
 #define D seg063
 #define W(o) ((uint16_t)(D[(o)] | D[(o) + 1] << 8))
@@ -31,6 +32,26 @@ static int installed;
 static uint8_t held, held_e0, last_e0;
 static uint32_t held_ms;
 
+/* Only the game thread touches pending actions. Cancellation is an ordered byte in
+   the keyboard queue, before focus-loss/settings releases, never a shared-state race. */
+static int toggle_pending[128];
+static int toggle_released = -1;
+
+int port_single_action_key(int scan)
+{
+    return ENHANCED(ENH_SINGLE_ACTION_TOGGLE) &&
+           ((scan >= 0x3B && scan <= 0x44) ||
+            (scan == 0x29 && ENHANCED(ENH_MOUSE_LOOK)));
+}
+
+int port_single_action_read(int *code)
+{
+    if (toggle_released < 0) return 0;
+    *code = toggle_released;
+    toggle_released = -1;
+    return 1;
+}
+
 /* The int 9 handler (+62E): store, advance, wrap; caps lock toggles the lock state. The LEDs
    are the host's business. */
 static void int9(uint8_t al)
@@ -41,6 +62,15 @@ static void int9(uint8_t al)
     if (di == 0x340) di = 0x300;
     atomic_store(&write_ptr, di);
     if (al == 0x3A) D[0x1E8] ^= 1;
+}
+
+void port_single_action_cancel(void)
+{
+    if (!ENHANCED(ENH_SINGLE_ACTION_TOGGLE)) return;
+    while (atomic_flag_test_and_set(&lock)) ;
+    /* FF is not a key in the game's set-1 keyboard. */
+    if (installed) int9(0xFF);
+    atomic_flag_clear(&lock);
 }
 
 void kbd_byte(uint8_t sc)
@@ -60,7 +90,7 @@ void kbd_tick_ms(uint32_t ms)
 {
     uint32_t before;
     while (atomic_flag_test_and_set(&lock)) ;
-    if (held && installed) {
+    if (held && installed && (held_e0 || !port_single_action_key(held))) {
         before = held_ms;
         held_ms += ms;
         /* 500 ms, then every 92 ms (10.9 a second) */
@@ -153,8 +183,13 @@ int key(void)
     uint8_t al;
     uint16_t ax, bx;
     int i;
+    toggle_released = -1;
     for (;;) {
         if (!whole(&al)) return 0;
+        if (al == 0xFF && ENHANCED(ENH_SINGLE_ACTION_TOGGLE)) {
+            memset(toggle_pending, 0, sizeof toggle_pending);
+            continue;
+        }
         if (al == 0xE1) {
             next();
             next();
@@ -173,6 +208,25 @@ int key(void)
         bx = al & 0x7F;
         if (al & 0x80) {
             D[0x1EB + bx] = 0;
+            modifiers();
+            if (port_single_action_key(bx) && toggle_pending[bx]) {
+                toggle_released = toggle_pending[bx] - 1;
+                toggle_pending[bx] = 0;
+                return 0;  /* do_keyboard_input reads the full release action separately */
+            }
+            continue;
+        }
+        if (port_single_action_key(bx)) {
+            if (!D[0x1EB + bx]) {
+                /* Keep modifiers from the press, even when Shift/Ctrl/Alt comes up first.
+                   The physical grave/tilde key always means the mouse-look toggle. */
+                int c = bx == 0x29 ? '`' : D[0x10 + bx];
+                if (D[0x1E2] && (c & 0x80)) c |= 0x400;
+                if (D[0x1E3]) c |= 0x200;
+                if (D[0x1E4]) c |= 0x100;
+                toggle_pending[bx] = c + 1;
+            }
+            D[0x1EB + bx] = 1;
             modifiers();
             continue;
         }

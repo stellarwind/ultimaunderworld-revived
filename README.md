@@ -25,7 +25,7 @@ This repository holds no game data: the native ports need your own copy of each 
 
 
 1. **Download** the package for your system from [Releases](https://github.com/abedegno/underworld-exhumed/releases). Each release is for one game: `uw1-v…` releases are *Ultima Underworld*, `uw2-v…` releases are *Ultima Underworld II*.
-2. **Install the game from GOG.** The port finds it in GOG's usual folders, including inside GOG's Mac app and its `game.gog` CD image, and on Windows where GOG's installer recorded it. If it finds nothing, it asks you to choose the folder, and remembers it. From a command line, `--data /path/to/game` names it.
+2. **Provide your game files.** For UW1, put the extracted original game in `UW1` beside the port executable (`UW.EXE` and the complete `DATA`, `CRIT`, `CUTS`, `SOUND` subfolders); it reads only that folder. For UW2, install the game from GOG. Its port finds it in GOG's usual folders, including inside GOG's Mac app and its `game.gog` CD image, and on Windows where GOG's installer recorded it. If it finds nothing, it asks you to choose the folder, and remembers it. From a command line, `--data /path/to/game` names it.
 3. **Start it:**
    - macOS: `UW1.app` or `UW2.app`. Both are signed and notarised, so they open like any app.
    - Windows: `uw1port.exe` or `uw2port.exe`.
@@ -33,11 +33,11 @@ This repository holds no game data: the native ports need your own copy of each 
 
 The controls are the game's own: the mouse, and the keys in the game's manual. F11 (Cmd+, on macOS) opens the port's settings screen ([SETTINGS.md](docs/SETTINGS.md)). The game's cursor follows the system pointer; `--mouse lock` captures the pointer on a click instead, as DOSBox does, with Ctrl+F10 to release it. With the `mouse-look` enhancement on, the `` ` `` key turns the view by the mouse instead ([ENHANCEMENTS.md](docs/ENHANCEMENTS.md)). With `modern-keys`, the keys are UltimaHacks' layout (WASD, Space to attack, Q and E to look and use).
 
-Saved games, settings, modified game files and recordings are kept locally in `uw1port-data` or `uw2port-data` beside the program. The program's folder must be writable; it never falls back to AppData or your user profile. `--home DIR` explicitly selects another writable folder. `Game folder` selects the original assets only. Existing saves in an older user-profile folder must be copied into the local folder manually.
+Saved games, settings, modified game files and recordings are kept locally in `uw1port-data` or `uw2port-data` beside the program. The program's folder must be writable; it never falls back to AppData or your user profile. `--home DIR` explicitly selects another writable folder. UW1 always reads original assets from `UW1` beside the program; UW2's `Game folder` selects its original assets. Existing saves in an older user-profile folder must be copied into the local folder manually.
 
 The first run gets a Sound Blaster with FM music and digitised speech or effects. For Roland MT-32 music you need your own MT-32 or CM-32L ROM images. The port finds them by itself in a `roms` folder in its home folder, beside the game or the program, or where DOSBox keeps MT-32 ROMs; or give `--mt32-roms` a folder or one of the files. Any file names work, whole images or their halves: the ROMs are recognised by their contents. On a Mac, drop the ROM folder onto the app. `--sound` picks other cards, and `--help` lists every option. Each game's README has its sound card numbers: [uw1](uw1/README.md), [uw2](uw2/README.md).
 
-**If something goes wrong,** [open an issue](https://github.com/abedegno/underworld-exhumed/issues/new/choose). Each play session's inputs are recorded to `recordings/` in the home folder (the newest five are kept). Zip the newest folder with the log beside it and attach it: it replays your session here exactly.
+**If something goes wrong,** [open an issue](https://github.com/abedegno/underworld-exhumed/issues/new/choose). UW1 has no session recording. In UW2, each play session's inputs are recorded to `recordings/` in the home folder (the newest five are kept). Zip the newest folder with the log beside it and attach it: it replays your session here exactly.
 
 Optional enhancements, all off by default, are listed in [docs/ENHANCEMENTS.md](docs/ENHANCEMENTS.md).
 

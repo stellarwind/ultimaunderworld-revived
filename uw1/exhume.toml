@@ -88,6 +88,8 @@ dir = "src/port"
 out = "port"                           # <build>/port, <build>/port-debug, <build>/port-cov
 exe = "uw1port"
 backend = "sdl3"
+# No automatic input recordings, session snapshots or recording retention code in UW1.
+runtime_exclude = ["port/sys/blackbox.c"]
 optimise = ["3d", "gfx", "x86"]        # the translated modules, their machine and the graphics C: -O2
 extracted_by = "tools/extract.py"
 
@@ -648,7 +650,7 @@ fallrestore = [
 
 [test]
 # Exhume's tools/test.py tiers: its default steps (the ones UW2 uses), with UW1's map notes check
-# after the black box (tools/notescheck.py: a note with no 0 in its 50 bytes, issue 7)
+# (tools/notescheck.py: a note with no 0 in its 50 bytes, issue 7)
 fast = [
     ["the gate", "{python} {exhume}/tools/gate.py --config {config} check"],
     ["port build", "{python} {exhume}/tools/portbuild.py --config {config}"],
@@ -657,7 +659,7 @@ fast = [
     ["enhancements", "{python} {exhume}/tools/enhcheck.py --config {config} all", "port build"],
     ["settings screen", "{python} {exhume}/tools/setcheck.py --config {config} all", "port build"],
     ["player movement", "{python} {exhume}/tools/movecheck.py --config {config}", "port build"],
-    ["the black box", "{python} {exhume}/tools/blackboxcheck.py --config {config}", "port build"],
+    ["single action toggle", "{python} tools/singleactioncheck.py", "port build"],
     ["map notes", "{python} tools/notescheck.py --config {config}", "port build"],
 ]
 full = [
@@ -672,7 +674,7 @@ full = [
     ["enhancements", "{python} {exhume}/tools/enhcheck.py --config {config} all", "port build"],
     ["settings screen", "{python} {exhume}/tools/setcheck.py --config {config} all", "port build"],
     ["player movement", "{python} {exhume}/tools/movecheck.py --config {config}", "port build"],
-    ["the black box", "{python} {exhume}/tools/blackboxcheck.py --config {config}", "port build"],
+    ["single action toggle", "{python} tools/singleactioncheck.py", "port build"],
     ["map notes", "{python} tools/notescheck.py --config {config}", "port build"],
     ["coverage report", "{python} {exhume}/tools/coverage.py --config {config}", "port build"],
 ]

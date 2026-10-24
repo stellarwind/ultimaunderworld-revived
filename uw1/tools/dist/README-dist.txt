@@ -13,11 +13,9 @@ Linux: the AppImage (UW1-...-linux-x86_64.AppImage) is one file: make it executa
 
 FINDING THE GAME
 
-On its first run the port looks for the game by itself: the current folder and the program's own folder, then, on Windows, the folders GOG's installers record in the registry, then GOG's install folders (/Applications on macOS, C:\GOG Games and GOG Galaxy's Games folder on Windows, ~/GOG Games and ~/Games on Linux). If it finds only GOG's CD image (game.gog, as GOG's Mac app ships it), it copies the game out of the image once into its home folder. If it finds nothing, it asks you to choose a folder: the one that holds UW.EXE, the GOG install folder, or the GOG app. The folder is remembered.
+Put your extracted original game in UW1 beside uw1port.exe: UW1/UW.EXE and the complete DATA, CRIT, CUTS and SOUND subfolders. This is the only game location used. The port does not search GOG installations, the registry, your working directory, saved settings or environment variables, and does not extract game.gog. There is no Game folder setting or desktop --data option.
 
-From a command line you can name the folder instead: uw1port --data /path/to/UW1. The environment variable UW1PORT_DATA does the same.
-
-The port reads original assets from the game folder. Saved games, modified game files, recordings and settings go to uw1port-data beside the program. That folder must be writable; the port never falls back to AppData or your user profile. --home DIR explicitly selects another writable folder. UW1PORT_HOME is ignored. To keep existing saves, copy them from the old user-profile folder into uw1port-data.
+The port reads original assets from the game folder. Saved games, modified game files and settings go to uw1port-data beside the program. That folder must be writable; the port never falls back to AppData or your user profile. --home DIR explicitly selects another writable folder. UW1PORT_HOME is ignored. To keep existing saves, copy them from the old user-profile folder into uw1port-data.
 
 PLAYING
 
@@ -34,3 +32,5 @@ Window: --scale N sets the starting size (3), --no-aspect shows square pixels in
 LICENCES
 
 LICENSE.txt: the MIT licence, for this project's own work only. NOTICE.txt: Ultima Underworld belongs to its owners, and the decompiled game code is derived from it. THIRD-PARTY-NOTICES.txt: the libraries in this package (SDL3, Nuked OPL3, libmt32emu and, on Windows, the compiler's runtime), with their licence texts in licenses/. Nuked OPL3 and libmt32emu are LGPL libraries and are separate shared libraries here, which you may replace with your own builds; THIRD-PARTY-NOTICES.txt says where their source is.
+
+Session recording has been removed. The port does not record player inputs or create session snapshots.

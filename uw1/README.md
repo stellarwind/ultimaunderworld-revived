@@ -15,10 +15,10 @@ No game data is included. You need your own copy of UW1 (the GOG release). This 
 ## Play it
 
 1. Get the port: download the package for your system from the [releases](https://github.com/abedegno/underworld-exhumed/releases) page, or [build it from source](#build-the-port-from-source).
-2. Install Ultima Underworld from GOG. The port finds it in GOG's usual folders (on Windows, where GOG's installer recorded it in the registry), including inside GOG's Mac app and its `game.gog` CD image. If it finds nothing, it asks you to choose the folder that holds `UW.EXE` (or the GOG install folder, or the GOG app), and remembers it. From a command line, `uw1port --data /path/to/UW1` names it.
+2. Put the extracted game files in `UW1` beside the port executable: `UW1/UW.EXE` and the complete `DATA`, `CRIT`, `CUTS` and `SOUND` subfolders. The desktop port reads only this folder; it never searches other installs or extracts CD images. There is no Game folder setting or desktop `--data` option.
 3. Start it: `UW1.app` on macOS (a package whose `README.txt` says it is not notarised needs right-click and Open the first time), `uw1port.exe` on Windows, and on Linux the AppImage (`chmod +x UW1-*.AppImage`, then run it) or `./uw1` from the tarball. The Linux packages need glibc 2.35 or later (Ubuntu 22.04 or newer).
 
-The controls are the game's own: the mouse, and the keys in the game's manual. The game's cursor follows the system pointer; `--mouse lock` captures the pointer on a click instead, as DOSBox does, with Ctrl+F10 to release it. Saved games and settings go to `uw1port-data` beside the program, which must be writable; there is no AppData or user-profile fallback. `--home DIR` explicitly selects another writable folder. Each session's inputs are recorded to `recordings/` there (the newest five are kept; `--no-recording` turns it off), so if the game crashes, the newest folder there replays it exactly: please attach it to a bug report.
+The controls are the game's own: the mouse, and the keys in the game's manual. The game's cursor follows the system pointer; `--mouse lock` captures the pointer on a click instead, as DOSBox does, with Ctrl+F10 to release it. Saved games and settings go to `uw1port-data` beside the program, which must be writable; there is no AppData or user-profile fallback. `--home DIR` explicitly selects another writable folder. Session recording is removed: the port creates no input recordings or session snapshots.
 
 Options (`uw1port --help` lists them all):
 
@@ -33,7 +33,7 @@ The port needs no Borland toolchain, DOS emulator or game data to build.
 ```sh
 make setup-port     # SDL3, libmt32emu and Nuked OPL3 for this OS (Exhume is the submodule: clone with --recursive)
 make port           # build/port/uw1port
-build/port/uw1port  # or: build/port/uw1port --data /path/to/UW1
+build/port/uw1port  # original assets must be in build/port/UW1
 ```
 
 - macOS: the Xcode command line tools and Homebrew.

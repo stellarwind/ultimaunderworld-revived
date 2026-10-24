@@ -17,7 +17,7 @@ int write_uw_cfg(const char *spec);
 extern const char *port_home;
 
 /* a row with no tab on the web, where it cannot work: a row whose tab is -1 is on no tab, never
-   drawn or reached. Window scale (the browser's window is not the port's to size); Game folder and
+   drawn or reached. Window scale (the browser's window is not the port's to size);
    MT-32 ROMs (a browser has no host folders to pick: the page gives the port its packed files);
    Fullscreen, which the page's own button does: a browser enters full screen only from the page's
    handler of a click or key, and the settings screen's input reaches the port later, from SDL's
@@ -30,7 +30,7 @@ extern const char *port_home;
 #endif
 
 /* The rows, in each tab's order; the display rows read each other's values */
-enum { R_MUSIC, R_SPEECH, R_ROMS, R_VOLUME, R_MOUSE, R_LOOK, R_FULL, R_SCALE, R_ASPECT, R_INTEGER, R_FOLDER, R_RECORD, R_START };
+enum { R_MUSIC, R_SPEECH, R_ROMS, R_VOLUME, R_MOUSE, R_LOOK, R_FULL, R_SCALE, R_ASPECT, R_INTEGER, R_START };
 
 /* Window scale offers only the scales whose window fits the display (with 4:3 as it stands) */
 static int scale_limit(void)
@@ -129,7 +129,6 @@ static const char *roms_show(const char *path)
     fprintf(stderr, "settings: MT-32 ROMs: %s\n", word);
     return word;
 }
-static int game_check(const char *path) { return port_game_dir_ok(path); }
 
 static const char *const mouse_names[] = { "Follow", "Lock", NULL };
 static const char *const mouse_stored[] = { "follow", "lock", NULL };
@@ -156,10 +155,6 @@ const struct setting port_settings[] = {
                     .apply = apply_display },
     [R_INTEGER] = { .tab = SET_TAB_DISPLAY, .label = "Whole-number scaling", .kind = SET_BOOL, .key = "integer", .def = 1,
                     .apply = apply_display },
-    [R_FOLDER]  = { .tab = WEB_HIDDEN(SET_TAB_GAME), .label = "Game folder", .kind = SET_FOLDER, .key = "data", .restart = 1,
-                    .check = game_check, .refuse = "That folder does not hold the game" },
-    [R_RECORD]  = { .tab = SET_TAB_GAME, .label = "Record sessions", .kind = SET_BOOL, .key = "recording", .def = 1,
-                    .restart = 1 },
     [R_START]   = { .tab = SET_TAB_GAME, .label = "Show this at start", .kind = SET_BOOL, .key = "settings-at-start", .def = 1 },
 };
 const int port_settings_count = (int)(sizeof port_settings / sizeof port_settings[0]);

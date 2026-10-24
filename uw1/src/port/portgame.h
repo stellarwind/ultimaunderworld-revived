@@ -6,7 +6,7 @@
    The program's name in its messages, and the game's main it runs; DGROUP's paragraph in UW.EXE,
    which the pseudo-registers _DS and _SS start with, and where Borland's _ctype table sits in
    DGROUP (DS:1E00, after the C library's ATEXIT word at 1DFE: build/LINK/out/UW.MAP, and the
-   bytes); the termination chain exit runs, which seg019's init hooked; the black box; the
+   bytes); the termination chain exit runs, which seg019's init hooked; the
    window; how the game's folder is found and what the settings file is called; the sound
    library's environment variables; and the far data blocks of UW.EXE that no source defines
    yet (mem/fardata.c), whose initial bytes are read from the user's own UW.EXE at start-up,
@@ -33,12 +33,7 @@ void seg019_exit_chain(void);                   /* sys/sysentry.c */
    (the buffer seg048:55EA names at its checkpoint 4) is at the load segment plus 6955h. */
 #define PORT_HEAP_FIRST (0x6955u + 0x0800u)     /* the runtime's PORT_LOAD_SEG, 0800h, plus 6955h */
 
-/* the black box (sys/blackbox.c): stage/ copies only the home directory's files a replay reads
-   back: DATA\ whole (UW.CFG, the sound cards, and any file the player put there to be read ahead
-   of the game's own, such as a translated STRINGS.PAK), SAVE0 (the game in progress) and the saved
-   games, SAVE1 to SAVE4; never gog-cd/, roms/, a game folder or the port's own files */
-#define PORT_BLACKBOX 1
-#define BLACKBOX_STAGE "DATA", "SAVE0", "SAVE1", "SAVE2", "SAVE3", "SAVE4"
+/* Automatic session recording and its crash/exit hooks are intentionally disabled. */
 
 /* the window (plat.h): its title when main gives none, and its icon, written by Exhume's
    tools/icons.py from tools/dist/icon/uw1.svg (not on macOS, where the app's own icon is used) */
@@ -82,10 +77,14 @@ extern unsigned char seg063[];
 enum { ENH_SKIP_INTRO, ENH_WRAP_MENU, ENH_FAST_PANELS, ENH_FREE_HEADING, ENH_SUBTITLES,
        ENH_SKILL_MESSAGES, ENH_PERSPECTIVE, ENH_FULL_SPRITES,
        ENH_WIDE_PITCH, ENH_MOUSE_LOOK, ENH_INVERT_LOOK, ENH_MODERN_KEYS, ENH_RUNE_KEYS,
-       ENH_TIDY_OBJECTS, ENH_RESTORE_AT_REST,
+       ENH_TIDY_OBJECTS, ENH_RESTORE_AT_REST, ENH_SINGLE_ACTION_TOGGLE,
        ENH_COUNT };
 /* --enhance modern-keys: the key code a lone left Shift gives (ui/MOUSE.C), unused by the game */
 #define PORT_KEY_LSHIFT 0xBF
+int port_single_action_key(int scan);
+int port_single_action_read(int *code);
+void port_single_action_cancel(void);
+void port_single_action_init(void);
 int port_pitch_bound(void);                 /* game/PLAYER.C: the pitch's bound either way */
 
 #endif
