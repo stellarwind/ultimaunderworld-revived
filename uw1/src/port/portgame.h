@@ -81,8 +81,8 @@ extern unsigned char seg063[];
    enhance_on, in the table's order. */
 enum { ENH_SKIP_INTRO, ENH_WRAP_MENU, ENH_FAST_PANELS, ENH_FREE_HEADING, ENH_SUBTITLES,
        ENH_SKILL_MESSAGES, ENH_PERSPECTIVE, ENH_FULL_SPRITES,
-       ENH_WIDE_PITCH, ENH_MOUSE_LOOK, ENH_INVERT_LOOK, ENH_MODERN_KEYS, ENH_RUNE_KEYS,
-       ENH_TIDY_OBJECTS, ENH_RESTORE_AT_REST, ENH_SINGLE_ACTION_TOGGLE, ENH_SMOOTH_WEAPON_SWAY,
+       ENH_WIDE_PITCH, ENH_MOUSE_LOOK, ENH_INVERT_LOOK, ENH_ENHANCED_INPUT, ENH_RUNE_KEYS,
+       ENH_TIDY_OBJECTS, ENH_RESTORE_AT_REST, ENH_SMOOTH_WEAPON_SWAY,
        ENH_STEADY_SWIMMING, ENH_COUNT };
 /* --enhance modern-keys: the key code a lone left Shift gives (ui/MOUSE.C), unused by the game */
 #define PORT_KEY_LSHIFT 0xBF
@@ -90,6 +90,7 @@ void port_audio_set_volume(int percent);
 int port_sound_enabled(int music, int fallback);
 void port_sound_remember(int music, int enabled);
 int port_single_action_key(int scan);
+void port_single_action_context(int gameplay);
 int port_single_action_read(int *code);
 void port_single_action_cancel(void);
 void port_single_action_init(void);

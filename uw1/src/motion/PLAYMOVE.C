@@ -89,7 +89,7 @@ static unsigned char modern_keys[9] = { 0x11, 0x2D, 0x69, 0x6A, 0x1E, 0x20, 0x1F
 
 static unsigned char port_move_key(int i)
 {
-    return ENHANCED(ENH_MODERN_KEYS) ? modern_keys[i] : move_keys[i];
+    return ENHANCED(ENH_ENHANCED_INPUT) ? modern_keys[i] : move_keys[i];
 }
 #endif
 static uint32 last_time = 0;
@@ -203,12 +203,12 @@ void far do_player_keyboard(void)
 
     TurnInpRate = ForwInpRate = 0;
 #ifndef __TURBOC__
-    if (ENHANCED(ENH_MODERN_KEYS) || ENHANCED(ENH_RUNE_KEYS)) {
+    if (ENHANCED(ENH_ENHANCED_INPUT) || ENHANCED(ENH_RUNE_KEYS)) {
         /* port only: UltimaHacks holds movement only while Ctrl and Alt are both down (the rune
            keys); modern-keys moves with Shift or Ctrl held, its fly keys */
         if (*Alt && *Ctrl)
             return;
-        if (!ENHANCED(ENH_MODERN_KEYS)) {
+        if (!ENHANCED(ENH_ENHANCED_INPUT)) {
             if ((*Shift || *CapsLock) && (*Shift == 0 || *CapsLock == 0))
                 return;
             if (*Alt || *Ctrl)
@@ -262,7 +262,7 @@ void far do_player_keyboard(void)
                 break;
             case 0x12:
 #ifndef __TURBOC__
-                if ((motionbits & (MB_LEVITATE | MB_FLY)) == 0 && ENHANCED(ENH_MODERN_KEYS))
+                if ((motionbits & (MB_LEVITATE | MB_FLY)) == 0 && ENHANCED(ENH_ENHANCED_INPUT))
                     break;              /* port only: UltimaHacks' fly keys do nothing on the ground */
 #endif
                 if ((motionbits & (MB_LEVITATE | MB_FLY)) == 0)
@@ -272,7 +272,7 @@ void far do_player_keyboard(void)
                 break;
             case 0x10:
 #ifndef __TURBOC__
-                if ((motionbits & (MB_LEVITATE | MB_FLY)) == 0 && ENHANCED(ENH_MODERN_KEYS))
+                if ((motionbits & (MB_LEVITATE | MB_FLY)) == 0 && ENHANCED(ENH_ENHANCED_INPUT))
                     break;              /* port only: UltimaHacks' fly keys do nothing on the ground */
 #endif
                 if ((motionbits & (MB_LEVITATE | MB_FLY)) == 0)

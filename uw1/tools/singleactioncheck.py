@@ -53,6 +53,8 @@ static uint32_t now;
 #define GAME_TIME() now
 static uint32_t key_time;
 static int key_index;
+#define MODE_GAME 1
+static struct { int mode; } input_state, *inplist = &input_state;
 static unsigned char *key_on = seg063 + 0x1EB, *Asc = seg063 + 0x10;
 static unsigned char *Shift = seg063 + 0x1E2, *Alt = seg063 + 0x1E3;
 static unsigned char *Ctrl = seg063 + 0x1E4, *CapsLock = seg063 + 0x1E8;
@@ -67,6 +69,8 @@ static void reset(int enhanced, int look) {
     memset(seg063, 0, sizeof seg063);
     memset(toggle_pending, 0, sizeof toggle_pending);
     toggle_released = -1;
+    atomic_store(&interact_actions, 0);
+    inplist->mode = MODE_GAME;
     held = held_e0 = last_e0 = 0; held_ms = 0;
     atomic_store(&write_ptr, 0x300); SETW(0x26C, 0x300);
     SETW(0x1E0, 1);  /* Accept repeats, as the game's held-key path does. */
@@ -77,9 +81,11 @@ static void reset(int enhanced, int look) {
     }
     for (i = 0x3B; i <= 0x44; ++i) Asc[i] = Asc[i + 128] = (unsigned char)(0x80 + i - 0x3B);
     Asc[0x11] = 'w'; Asc[0x11 + 128] = 'W';
+    Asc[0x10] = 'q'; Asc[0x10 + 128] = 'Q';
+    Asc[0x12] = 'e'; Asc[0x12 + 128] = 'E';
     Asc[0x0F] = 9; Asc[0x0F + 128] = 0xA3;
     Asc[0x29] = '`'; Asc[0x29 + 128] = '~';
-    enhance_on = (enhanced ? 1u << ENH_SINGLE_ACTION_TOGGLE : 0) | (look ? 1u << ENH_MOUSE_LOOK : 0);
+    enhance_on = (enhanced ? 1u << ENH_ENHANCED_INPUT : 0) | (look ? 1u << ENH_MOUSE_LOOK : 0);
     now = 1000; key_time = 0; key_index = 0;
     seg019_598();
 }
@@ -110,9 +116,9 @@ int main(void) {
         assert(read_input(array) == 0x84); assert(read_input(array) == 0x80);
         assert(read_input(array) == -1);
         reset(1, 1);
-        kbd_byte(0x2A); assert(read_input(array) == -1);
+        kbd_byte(0x36); assert(read_input(array) == -1);
         kbd_byte(0x3F); assert(read_input(array) == -1);
-        kbd_byte(0xAA); kbd_byte(0xBF);
+        kbd_byte(0xB6); kbd_byte(0xBF);
         assert(read_input(array) == (0x84 | KEY_SHIFT));
         reset(1, 1);
         kbd_byte(0x1D); assert(read_input(array) == -1);
@@ -120,7 +126,7 @@ int main(void) {
         kbd_byte(0x9D); kbd_byte(0xBF);
         assert(read_input(array) == (0x84 | KEY_CTRL));
         reset(1, 1);
-        kbd_byte(0x2A); assert(read_input(array) == -1);
+        kbd_byte(0x36); assert(read_input(array) == -1);
         kbd_byte(0x29); assert(read_input(array) == -1);
         kbd_byte(0xA9); assert(read_input(array) == '`'); /* Physical tilde works too. */
         reset(1, 1);
@@ -141,7 +147,6 @@ int main(void) {
         kbd_tick_ms(600); assert(read_input(array) == 0x84);
         kbd_byte(0xBF); assert(read_input(array) == -1);
         reset(1, 1);
-        enhance_on |= 1u << ENH_MODERN_KEYS;
         kbd_byte(0x0F);
         for (i = 0; i < 40; ++i) { kbd_tick_ms(100); assert(read_input(array) == -1); }
         kbd_byte(0x8F); assert(read_input(array) == 9); assert(read_input(array) == -1);
@@ -151,18 +156,56 @@ int main(void) {
         kbd_byte(0x0F); assert(read_input(array) == -1);
         kbd_byte(0xB6); kbd_byte(0x8F);
         assert(read_input(array) == (0xA3 | KEY_SHIFT));
-        reset(1, 1); /* Without modern-keys Tab stays an ordinary repeating key. */
+        reset(0, 1); /* Without Enhanced Input Tab stays an ordinary repeating key. */
         kbd_byte(0x0F); assert(read_input(array) == 9);
         kbd_tick_ms(600); assert(read_input(array) == 9);
         reset(0, 1);
-        enhance_on |= 1u << ENH_MODERN_KEYS;
         kbd_byte(0x0F); assert(read_input(array) == 9);
         kbd_tick_ms(600); assert(read_input(array) == 9);
         reset(1, 0);  /* Grave remains a normal text key without mouse-look. */
         kbd_byte(0x29); assert(read_input(array) == '`');
         kbd_tick_ms(600); assert(read_input(array) == '`');
     }
-    puts("singleactioncheck: both input paths passed: F1-F10, Tab/Shift+Tab, grave/tilde, long holds, taps, overlap, modifiers, cancellation, movement/text repeat and enhancement off");
+    for (scan = 0x10; scan <= 0x12; scan += 2) {
+        int letter = scan == 0x10 ? 'q' : 'e';
+        reset(1, 1);
+        kbd_byte((uint8_t)scan);
+        for (i = 0; i < 40; ++i) { kbd_tick_ms(100); assert(read_input(1) == -1); }
+        kbd_byte((uint8_t)(scan | 0x80));
+        assert(read_input(1) == letter); assert(read_input(1) == -1);
+        kbd_byte((uint8_t)(scan | 0x80)); assert(read_input(1) == -1);
+        for (i = 0; i < 3; ++i) {
+            kbd_byte((uint8_t)scan); kbd_byte((uint8_t)(scan | 0x80));
+            assert(read_input(1) == letter);
+        }
+        kbd_byte((uint8_t)scan); assert(read_input(1) == -1);
+        port_single_action_cancel(); kbd_byte((uint8_t)(scan | 0x80));
+        assert(read_input(1) == -1);
+        kbd_byte(0x1D); assert(read_input(1) == -1);
+        kbd_byte((uint8_t)scan); assert(read_input(1) == -1);
+        kbd_byte(0x9D); kbd_byte((uint8_t)(scan | 0x80));
+        assert(read_input(1) == (letter | KEY_CTRL));
+        *CapsLock = 1;
+        kbd_byte((uint8_t)scan); kbd_byte((uint8_t)(scan | 0x80));
+        assert(read_input(1) == letter - 0x20);
+        *CapsLock = 0;
+        kbd_byte((uint8_t)scan); assert(read_input(1) == -1);
+        assert(read_input(0) == -1); /* Switching to text cancels the queued action. */
+        kbd_byte((uint8_t)(scan | 0x80)); assert(read_input(0) == -1);
+        kbd_byte((uint8_t)scan); assert(read_input(0) == letter);
+        kbd_tick_ms(600); assert(read_input(0) == letter);
+        reset(1, 1);
+        inplist->mode = 2; /* Map/conversation dispatcher also retains ordinary typing. */
+        kbd_byte((uint8_t)scan); assert(read_input(1) == letter);
+        kbd_tick_ms(600); assert(read_input(1) == letter);
+        reset(0, 1); /* Original controls retain Q/E movement and repeat. */
+        kbd_byte((uint8_t)scan); assert(read_input(1) == letter);
+        kbd_tick_ms(600); assert(read_input(1) == letter);
+        reset(0, 1);
+        kbd_byte((uint8_t)scan); assert(read_input(1) == letter);
+        kbd_tick_ms(600); assert(read_input(1) == letter);
+    }
+    puts("singleactioncheck: F1-F10, Tab/Shift+Tab, Q/E gameplay actions, text entry, modifiers, cancellation, movement repeat and enhancement off passed");
     return 0;
 }
 """
@@ -191,7 +234,7 @@ def host_check():
 #include <stdio.h>
 #include "portgame.h"
 #include "sys/enhance.h"
-uint32_t enhance_on = 1u << ENH_SINGLE_ACTION_TOGGLE;
+uint32_t enhance_on = 1u << ENH_ENHANCED_INPUT;
 static int cancelled;
 void port_single_action_cancel(void) { ++cancelled; }
 """

@@ -425,6 +425,7 @@ int far do_keyboard_input(char array)
     int c;
 
 #ifndef __TURBOC__
+    port_single_action_context(array && inplist->mode == MODE_GAME);
     {
         /* port only: --enhance modern-keys binds a lone left Shift (UltimaHacks' jump). It has no
            character, so KEY never gives it; a new press is seen in key_on (0x2A, its scan code),
@@ -433,7 +434,7 @@ int far do_keyboard_input(char array)
         char now = key_on[0x2A] != 0;
         char pressed = now && !lshift_was;
         lshift_was = now;
-        if (pressed && ENHANCED(ENH_MODERN_KEYS)) {
+        if (pressed && ENHANCED(ENH_ENHANCED_INPUT)) {
             key_time = GAME_TIME();
             c = PORT_KEY_LSHIFT | KEY_SHIFT;
             if (*Alt)
@@ -447,7 +448,7 @@ int far do_keyboard_input(char array)
     c = KEY();
 #ifndef __TURBOC__
     /* The release action bypasses held-key scanning and already has its press modifiers. */
-    if (ENHANCED(ENH_SINGLE_ACTION_TOGGLE) && port_single_action_read(&c)) {
+    if (ENHANCED(ENH_ENHANCED_INPUT) && port_single_action_read(&c)) {
         key_time = GAME_TIME();
         return c;
     }

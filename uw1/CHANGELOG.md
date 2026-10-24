@@ -6,6 +6,8 @@ For players. Each release's notes are drafted from here. Releases are tagged `uw
 
 This fork's first release, with a Windows x64 package.
 
+- **New:** **Enhanced Input** (`enhanced-input`) combines Modern Keys and Single Action Toggle: modern keys and the key press registration fix. Includes WASD movement, Tab to draw/sheath the weapon, Space to attack, and Q/E to look/use at the cursor. F1-F10, Tab, Q/E interactions and the mouse-look toggle act once on release without repeating. Movement and text entry retain normal repeat; opening settings or losing focus cancels pending actions. Mouse-look must be enabled for its toggle. Existing settings using either old option migrate automatically; the old names remain accepted for compatibility.
+
 - **Changed:** added a global volume boost up to 200% because the original volume was perceived as too quiet. 100% remains the original volume; 200% applies 2× output gain.
 - **Fixed:** the in-game Music and Sound on/off choices now persist across restarts and take precedence over saved-game audio settings.
 
@@ -15,16 +17,14 @@ This fork's first release, with a Windows x64 package.
 
 - **New:** optional `smooth-weapon-sway` replaces the random weapon shake sampled each 3D frame with a smooth sway driven by the 256 Hz game clock. Only the draw offset changes; original random-number consumption, weapon state, attack frames and charge timing are preserved.
 
-- **New:** with `modern-keys`, Tab toggles combat stance (draw/sheath) using the original F5 action. With `single-action-toggle` enabled, it acts once on release without repeating. Shift+Tab and Tab outside gameplay retain their original actions.
 
-- **New:** Single Action Toggle (`single-action-toggle`), an optional enhancement in the Enhancements tab. F1-F10, Tab combat (with modern-keys), and the physical backtick/tilde mouse-look key activate once on release. Holding them no longer repeatedly toggles actions. Movement and ordinary text keys retain repeat, and opening settings or losing focus cancels pending toggle actions. Mouse-look must also be enabled for its toggle key.
 - **Fixed:** the port now remembers the window's position, size and maximized state. Restoring a maximized window returns to its previous normal rectangle. Fullscreen and the settings panel's temporary resize do not overwrite that rectangle, and a rectangle on a disconnected monitor is fitted onto an available display. Placement is stored as `window-geometry` and `window-maximized` in the local settings file.
 - **Changed:** UW1 reads original game assets only from `UW1` beside `uw1port.exe`, containing `UW.EXE` and the complete `DATA`, `CRIT`, `CUTS` and `SOUND` folders. Automatic game searches, CD-image extraction, the Game folder picker and the desktop `--data` option are removed.
 - **Changed:** writable game files, saves and settings default to `uw1port-data` beside the executable. There is no automatic AppData or user-profile fallback; an unwritable local folder causes startup to fail. `UW1PORT_HOME` is ignored, while explicit `--home DIR` remains available.
 - **Removed:** automatic session recording, session snapshots, the Record sessions setting and the `--record`/`--no-recording` switches. Developer replay support remains.
 - **Removed:** this project's browser launcher, WebAssembly targets, web deployment workflow and browser-only adapters. The native SDL renderer remains.
 
-**Installation and upgrade:** extract the Windows package into a writable folder. Place your own original game files in its adjacent `UW1` folder. Game files and MT-32 ROMs are not included. Existing `UW1` and `uw1port-data` folders can stay in place when replacing the executable and DLLs. For an older installation, copy your settings, `DATA` overrides and `SAVE0`-`SAVE4` from the former home folder into `uw1port-data`; the port does not migrate or delete old files automatically. Enable Single Action Toggle in Enhancements and restart, or run `uw1port.exe --enhance single-action-toggle`.
+**Installation and upgrade:** extract the Windows package into a writable folder. Place your own original game files in its adjacent `UW1` folder. Game files and MT-32 ROMs are not included. Existing `UW1` and `uw1port-data` folders can stay in place when replacing the executable and DLLs. For an older installation, copy your settings, `DATA` overrides and `SAVE0`-`SAVE4` from the former home folder into `uw1port-data`; the port does not migrate or delete old files automatically.
 
 ## 1.0.2 (14 October 2026)
 

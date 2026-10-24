@@ -36,13 +36,23 @@ static uint32_t held_ms;
    the keyboard queue, before focus-loss/settings releases, never a shared-state race. */
 static int toggle_pending[128];
 static int toggle_released = -1;
+static _Atomic int interact_actions;
+
+void port_single_action_context(int gameplay)
+{
+    if (atomic_exchange(&interact_actions, gameplay != 0) != (gameplay != 0)) {
+        /* A held interaction key must not leak into a text prompt or another screen. */
+        toggle_pending[0x10] = toggle_pending[0x12] = 0;
+    }
+}
 
 int port_single_action_key(int scan)
 {
-    return ENHANCED(ENH_SINGLE_ACTION_TOGGLE) &&
+    return ENHANCED(ENH_ENHANCED_INPUT) &&
            ((scan >= 0x3B && scan <= 0x44) ||
             (scan == 0x29 && ENHANCED(ENH_MOUSE_LOOK)) ||
-            (scan == 0x0F && ENHANCED(ENH_MODERN_KEYS)));
+            scan == 0x0F ||
+            ((scan == 0x10 || scan == 0x12) && atomic_load(&interact_actions)));
 }
 
 int port_single_action_read(int *code)
@@ -67,7 +77,7 @@ static void int9(uint8_t al)
 
 void port_single_action_cancel(void)
 {
-    if (!ENHANCED(ENH_SINGLE_ACTION_TOGGLE)) return;
+    if (!ENHANCED(ENH_ENHANCED_INPUT)) return;
     while (atomic_flag_test_and_set(&lock)) ;
     /* FF is not a key in the game's set-1 keyboard. */
     if (installed) int9(0xFF);
@@ -187,7 +197,7 @@ int key(void)
     toggle_released = -1;
     for (;;) {
         if (!whole(&al)) return 0;
-        if (al == 0xFF && ENHANCED(ENH_SINGLE_ACTION_TOGGLE)) {
+        if (al == 0xFF && ENHANCED(ENH_ENHANCED_INPUT)) {
             memset(toggle_pending, 0, sizeof toggle_pending);
             continue;
         }
@@ -222,6 +232,7 @@ int key(void)
                 /* Keep modifiers from the press, even when Shift/Ctrl/Alt comes up first.
                    The physical grave/tilde key always means the mouse-look toggle. */
                 int c = bx == 0x29 ? '`' : D[0x10 + bx + (D[0x1E2] ? 0x80 : 0)];
+                if ((bx == 0x10 || bx == 0x12) && D[0x1E8]) c ^= 0x20;
                 if (D[0x1E2] && (c & 0x80)) c |= 0x400;
                 if (D[0x1E3]) c |= 0x200;
                 if (D[0x1E4]) c |= 0x100;

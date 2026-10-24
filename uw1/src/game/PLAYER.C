@@ -155,7 +155,7 @@ void far init_player(void)
         player_name_handle = make_string((char far *)player, STRBLK_PLAYER);
 
 #ifndef __TURBOC__
-    if (!ENHANCED(ENH_MODERN_KEYS)) {   /* port only: modern-keys gives these keys other meanings */
+    if (!ENHANCED(ENH_ENHANCED_INPUT)) {   /* port only: modern-keys gives these keys other meanings */
 #endif
     _input_addkey('w', 0x0E, 1, (InputFn)parse_playin);
     _input_addkey('s', 5, 1, (InputFn)parse_playin);
@@ -170,7 +170,7 @@ void far init_player(void)
     }
 #endif
 #ifndef __TURBOC__
-    if (!ENHANCED(ENH_MODERN_KEYS)) {   /* port only: modern-keys steps with Ctrl and the arrows */
+    if (!ENHANCED(ENH_ENHANCED_INPUT)) {   /* port only: modern-keys steps with Ctrl and the arrows */
 #endif
     _input_addkey('A', -1, 1, (InputFn)player_simple_move);
     _input_addkey('D', 1, 1, (InputFn)player_simple_move);
@@ -184,11 +184,11 @@ void far init_player(void)
     input_addmouse(0x82, 0x1F, 0x92, 0x2C, 0, 1, (InputFn)player_simple_move);
     input_addmouse(0x9B, 0x21, 0xAA, 0x2F, 1, 1, (InputFn)player_simple_move);
 #ifndef __TURBOC__
-    if (!ENHANCED(ENH_MODERN_KEYS))     /* port only: modern-keys swaps 1 and 3 (1 looks up) */
+    if (!ENHANCED(ENH_ENHANCED_INPUT))     /* port only: modern-keys swaps 1 and 3 (1 looks up) */
 #endif
     _input_addkey('3', 1, 0x11, (InputFn)chg_plyp);
 #ifndef __TURBOC__
-    if (!ENHANCED(ENH_MODERN_KEYS))     /* port only: modern-keys swaps 1 and 3 (1 looks up) */
+    if (!ENHANCED(ENH_ENHANCED_INPUT))     /* port only: modern-keys swaps 1 and 3 (1 looks up) */
 #endif
     _input_addkey('1', -1, 0x11, (InputFn)chg_plyp);
     _input_addkey('2', 0, 0x11, (InputFn)chg_plyp);
@@ -197,7 +197,7 @@ void far init_player(void)
         _input_addkey('`', 0, 0x11, (InputFn)port_mouse_look_toggle);
 #endif
 #ifndef __TURBOC__
-    if (ENHANCED(ENH_MODERN_KEYS)) {   /* port only: UltimaHacks' keys (ui/keys.c), its input-mode masks */
+    if (ENHANCED(ENH_ENHANCED_INPUT)) {   /* port only: UltimaHacks' keys (ui/keys.c), its input-mode masks */
         _input_addkey('\t', 1, 1, (InputFn)deal_with_icons);  /* Tab: draw/sheath, as F5; before the original pointer-warp binding */
         _input_addkey(' ', 0, 1, (InputFn)port_key_attack);
         _input_addkey('.', 3, 1, (InputFn)port_key_attack);
@@ -252,15 +252,15 @@ void far init_player(void)
     _input_addkey(KEY_F5, 1, 1, (InputFn)deal_with_icons);
     _input_addkey(KEY_F6, 0, 1, (InputFn)deal_with_icons);
 #ifndef __TURBOC__
-    if (!ENHANCED(ENH_MODERN_KEYS))     /* port only: modern-keys remembers the attack type */
+    if (!ENHANCED(ENH_ENHANCED_INPUT))     /* port only: modern-keys remembers the attack type */
 #endif
     _input_addkey('p', 9, 1, (InputFn)player_attack);
 #ifndef __TURBOC__
-    if (!ENHANCED(ENH_MODERN_KEYS))     /* port only: modern-keys remembers the attack type */
+    if (!ENHANCED(ENH_ENHANCED_INPUT))     /* port only: modern-keys remembers the attack type */
 #endif
     _input_addkey('.', 3, 1, (InputFn)player_attack);
 #ifndef __TURBOC__
-    if (!ENHANCED(ENH_MODERN_KEYS))     /* port only: modern-keys remembers the attack type */
+    if (!ENHANCED(ENH_ENHANCED_INPUT))     /* port only: modern-keys remembers the attack type */
 #endif
     _input_addkey(';', 6, 1, (InputFn)player_attack);
     _input_addkey(KEY_SHIFT | KEY_BACKTAB, KEY_SHIFT | KEY_BACKTAB, 7, (InputFn)keyboard_mouse);

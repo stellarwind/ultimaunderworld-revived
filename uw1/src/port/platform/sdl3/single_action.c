@@ -21,5 +21,5 @@ static bool cancel_action(void *unused, SDL_Event *event)
 
 void port_single_action_init(void)
 {
-    if (ENHANCED(ENH_SINGLE_ACTION_TOGGLE)) SDL_AddEventWatch(cancel_action, NULL);
+    if (ENHANCED(ENH_ENHANCED_INPUT)) SDL_AddEventWatch(cancel_action, NULL);
 }

@@ -23,19 +23,19 @@ They are kept in the settings file (`enhance=` in `uw1port.cfg` or `uw2port.cfg`
 | `wide-pitch` | UW1, UW2 | gameplay | Look three times as far up and down. Beyond the original's limit the game also draws the squares just behind you (without their objects), so the floor and ceiling have no gaps when you look steeply. Gameplay, since where you look decides where you aim, throw and click | [UltimaHacks](https://github.com/JohnGlassmyer/UltimaHacks) (its two-pass drawing, in C) |
 | `mouse-look` | UW1, UW2 | timing | The `` ` `` key turns mouse-look on and off. While it is on, the mouse turns the view and looks up and down, the pointer stays at the view's centre as a crosshair, and clicks act there; the port captures the pointer. It turns off by itself on the map and in conversations and back on after. `look-speed=` in the settings file sets how fast it turns, as a percentage (default 100, 10 to 400). Without `wide-pitch` it looks up and down only as far as the original | the idea from [UltimaHacks](https://github.com/JohnGlassmyer/UltimaHacks) |
 | `invert-look` | UW1, UW2 | presentation | Mouse-look's up and down the other way round; nothing without `mouse-look` | the idea from [UltimaHacks](https://github.com/JohnGlassmyer/UltimaHacks) |
-| `modern-keys` | UW1, UW2 | timing | UltimaHacks' key layout, below, in place of the original's movement keys. UW1 also binds Tab to draw/sheath the weapon. Each new key acts as the click it stands for | [UltimaHacks](https://github.com/JohnGlassmyer/UltimaHacks) (its layout; UW1's Tab binding is this project's addition) |
+| `modern-keys` | UW2 | timing | UltimaHacks' key layout, below, in place of the original's movement keys | [UltimaHacks](https://github.com/JohnGlassmyer/UltimaHacks) |
+| `enhanced-input` | UW1 | timing | Enhanced Input: modern keys and key press registration fix. Includes WASD movement, Tab combat, Q/E look/use, Space attacks and the key layout below. F1-F10, Tab, Q/E interactions and mouse-look (when enabled) act once on release. Text entry and movement retain normal repeat; focus loss or opening settings cancels pending actions. Replaces Modern Keys and Single Action Toggle; either old setting automatically migrates to this option | [UltimaHacks](https://github.com/JohnGlassmyer/UltimaHacks) layout; input fixes by this fork |
 | `rune-keys` | UW1, UW2 | presentation | Ctrl+Alt with a letter puts that rune on the shelf (Y is Ylem: there is no X rune), Ctrl+Alt+Backspace clears the shelf, Ctrl+Alt+Space casts. A rune you do not have is refused with a sound. Movement keys are ignored while Ctrl and Alt are both held | [UltimaHacks](https://github.com/JohnGlassmyer/UltimaHacks) |
 | `tidy-objects` | UW1 | gameplay | Two fixes for "Problems in object list" (issue 9). In the original, asking for part of a floor stack that is then too heavy to pick up loses an object: the split part is taken off the stack and never freed. With this on it is freed, as UW2 does. And when the object lists are checked on arriving at a level or after a restore and fail only because objects were lost this way, the lost objects are put back on the free list first, so a saved game that already has some stops showing the message. Nothing is changed unless every other object is where it should be | this project (the first fix is UW2's own code) |
 | `smooth-weapon-sway` | UW1 | presentation | Smooth Weapon Sway: replaces the random sideways weapon shake with smooth clock-driven motion while moving. Keeps the original RNG calls, weapon state and attack timing | this project |
 | `steady-swimming` | UW1 | presentation | Steady Swimming: removes random heading, pitch and stationary roll jolts while swimming. Keeps the normal vertical bobbing, moving roll, original RNG calls, drowning and movement mechanics, and separate combat/tremor shakes | this project |
-| `single-action-toggle` | UW1 | timing | Single Action Toggle: F1-F10, Tab combat (with modern-keys), and the physical backtick/tilde key (with mouse-look enabled) act once on release. Holding them does not repeat. Movement and other text keys keep repeating. Opening settings or losing focus cancels pending actions | this project |
 | `restore-at-rest` | UW1, UW2 | gameplay | A restored game starts at rest where it was saved (issue 10). The original keeps the speed and any fall of the game you restore from, since a saved game holds no motion: a restore while falling can hurt you, and a restore while running slides you on. With this on the restore clears the player's motion; a game saved in mid-air then falls from rest | this project |
 
 **`perspective` in UW1**, the same moment looking down, off and on: the stone courses bend without it and run straight with it.
 
 ![UW1 pitched, perspective off](img/perspective-off.png) ![UW1 pitched, perspective on](img/perspective-on.png)
 
-**`modern-keys`**, the keys:
+**`enhanced-input` (UW1) / `modern-keys` (UW2)**, the keys:
 
 | Keys | What they do |
 |---|---|
@@ -45,7 +45,7 @@ They are kept in the settings file (`enhance=` in `uw1port.cfg` or `uw2port.cfg`
 | Shift, Ctrl+Shift | jump, standing long jump (J still jumps too); while flying or levitating, Shift held flies up and Ctrl down, and on the ground they do not stop other movement |
 | Ctrl with the grey arrows | step forward, back, left, right by a fixed amount |
 | Up, Down (the grey arrows), 1, 3 | look up, down (1 is now up); 2 and keypad 5 look ahead |
-| Tab (UW1) | draw/sheath the weapon, like F5; with Single Action Toggle it activates once on release |
+| Tab (UW1) | draw/sheath the weapon, like F5; activates once on release |
 | Space | attack with the last attack type, slash at first; `.` `;` `p` still thrust, slash and bash, and set the last type |
 | Q, E | look at, use, what is under the pointer (the crosshair with mouse-look); E on a person talks to them |
 | Z | the map; on it S a level on, W a level back, C your own level; UW2 also D and A the previous and next world |
