@@ -196,7 +196,7 @@ static const char help_text[] =
     "  --data DIR             the UW2 folder (UW2.EXE, DATA, CRIT, CUTS, SOUND), or a folder\n"
     "                         holding it or GOG's game.gog; found by itself when not given\n"
     "                         ($UW2PORT_DATA, the last folder used, GOG's install folders)\n"
-    "  --home DIR             where saved games and settings go ($UW2PORT_HOME, else ~/.uw2port)\n"
+    "  --home DIR             writable folder (default: uw2port-data beside the program)\n"
     "Enhancements (off by default; docs/ENHANCEMENTS.md):\n"
     "  --enhance NAME[,NAME]  turn on changes the original game does not have, kept until\n"
     "                         changed; --enhance list lists them\n"
@@ -326,7 +326,7 @@ void port_settings_roms(const char *dir);
 int main(int argc, char *argv[])
 {
     static char home_buf[1024], exe[1200], data_buf[1024], abs_buf[1024];
-    const char *data = NULL, *home = getenv("UW2PORT_HOME"), *replay = NULL;
+    const char *data = NULL, *home = NULL, *replay = NULL;
     const char *sound = NULL, *roms = NULL, *wav = NULL, *ail_log = NULL, *hw_log = NULL, *mouse = NULL;
     char mouse_buf[16];
     int audio_device = 1, interactive, recording = 1, status;
@@ -414,13 +414,20 @@ int main(int argc, char *argv[])
     /* a recording made with cheats (format 6) runs them again: a test's too */
     if (replay && cheat_from_recording(replay) < 0) return 1;
     if (!home) {
+#ifdef __EMSCRIPTEN__
+        /* The browser keeps its files in its mounted virtual home. */
         const char *h = getenv("HOME");
-#ifdef _WIN32
-        if (!h && getenv("APPDATA")) {          /* started from Explorer: no HOME */
-            snprintf(home_buf, sizeof home_buf, "%s/uw2port", getenv("APPDATA"));
-        } else
-#endif
         snprintf(home_buf, sizeof home_buf, "%s/.uw2port", h ? h : ".");
+#else
+        /* Portable desktop storage: never fall back to HOME or AppData. SDL's base
+           directory is independent of a shortcut's working directory. */
+        const char *base = plat_base_dir();
+        if (!base || !*base ||
+            snprintf(home_buf, sizeof home_buf, "%suw2port-data", base) >= (int)sizeof home_buf) {
+            fprintf(stderr, "uw2port: cannot locate the program directory (give --home DIR)\n");
+            return 1;
+        }
+#endif
         home = home_buf;
     }
     /* A player's run, as opposed to a test's: it may ask with dialogs, remembers the game's

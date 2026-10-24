@@ -17,7 +17,7 @@ On its first run the port looks for the game by itself: the current folder and t
 
 From a command line you can name the folder instead: uw2port --data /path/to/UW2. The environment variable UW2PORT_DATA does the same.
 
-The port never writes to the game folder. Saved games, the sound settings and the port's settings (uw2port.cfg) go to its home folder: ~/.uw2port on macOS and Linux, and %APPDATA%\uw2port on Windows (or %HOME%\.uw2port where HOME is set, as in MSYS2). --home DIR or UW2PORT_HOME chooses another.
+The port reads original assets from the game folder. Saved games, modified game files, recordings and settings go to uw2port-data beside the program. That folder must be writable; the port never falls back to AppData or your user profile. --home DIR explicitly selects another writable folder. UW2PORT_HOME is ignored. To keep existing saves, copy them from the old user-profile folder into uw2port-data.
 
 PLAYING
 

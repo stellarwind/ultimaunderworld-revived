@@ -18,7 +18,7 @@ The first time you run a port, and on every start after that unless you turn it 
 
 The mouse works too: click a tab, click a row to change it, drag a slider (Volume, Mouse-look speed).
 
-Every change is written to the settings file at once. A row marked "Restart to apply" on the screen is saved but only used from the next start; the others take effect immediately. The settings file is `uw1port.cfg` or `uw2port.cfg` in the port's home folder (`~/.uw1port` or `~/.uw2port` on macOS and Linux, `%APPDATA%\uw1port` or `%APPDATA%\uw2port` on Windows). On a Mac the folder is hidden, as its name starts with a dot: in Finder press Cmd+Shift+G and type `~/.uw2port`. The home folder also holds your saved games, so to start the port afresh rename it rather than delete it. The two sound card rows are the exception: they are kept in `DATA\UW.CFG` in the home folder, the file the original install program wrote, so they have no key.
+Every change is written to the settings file at once. A row marked "Restart to apply" on the screen is saved but only used from the next start; the others take effect immediately. The settings file is `uw1port.cfg` or `uw2port.cfg` in `uw1port-data` or `uw2port-data` beside the program (or the folder explicitly selected with `--home DIR`). The program's folder must be writable; there is no AppData or user-profile fallback. The Game folder setting selects original assets and does not relocate writable files. The home folder also holds your saved games, so to start the port afresh rename it rather than delete it. The two sound card rows are the exception: they are kept in `DATA\UW.CFG` in the home folder, the file the original install program wrote, so they have no key.
 
 ## The options
 

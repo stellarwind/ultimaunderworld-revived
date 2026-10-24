@@ -17,7 +17,7 @@ On its first run the port looks for the game by itself: the current folder and t
 
 From a command line you can name the folder instead: uw1port --data /path/to/UW1. The environment variable UW1PORT_DATA does the same.
 
-The port never writes to the game folder. Saved games, the sound settings and the port's settings (uw1port.cfg) go to its home folder: ~/.uw1port on macOS and Linux, and %APPDATA%\uw1port on Windows (or %HOME%\.uw1port where HOME is set, as in MSYS2). --home DIR or UW1PORT_HOME chooses another.
+The port reads original assets from the game folder. Saved games, modified game files, recordings and settings go to uw1port-data beside the program. That folder must be writable; the port never falls back to AppData or your user profile. --home DIR explicitly selects another writable folder. UW1PORT_HOME is ignored. To keep existing saves, copy them from the old user-profile folder into uw1port-data.
 
 PLAYING
 
