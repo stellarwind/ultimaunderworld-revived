@@ -540,6 +540,15 @@ void far parse_effect(void)
             playerMod[0] += rorEffect[(phase + 2) & 0xF] * 2 * amp;
             playerMod[1] = amp * ((rand() & 0x7F) - 0x40);
             playerMod[2] = amp * ((rand() & 0x7F) - 0x40);
+#ifndef __TURBOC__
+            /* Keep the original RNG calls and buoyancy, but remove random camera jolts.
+               Combat and tremor effects below still apply independently. */
+            if (ENHANCED(ENH_STEADY_SWIMMING)) {
+                playerMod[1] = playerMod[2] = 0;
+                if (PN.speed == 0)
+                    playerMod[3] = 0;
+            }
+#endif
         }
     }
     if (player->motion_state & MS_LAVA && !DragonSkinBoots_dseg_5c99_1B01 && rand() % 5 == 0)

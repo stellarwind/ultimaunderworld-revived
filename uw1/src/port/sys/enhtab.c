@@ -23,4 +23,5 @@ const struct enhance_flag enhance_table[ENH_COUNT] = {
     { "restore-at-rest", "A restored game starts at rest, without the motion or fall it was restored in", ENH_GAMEPLAY, NULL, NULL },
     { "single-action-toggle", "Single Action Toggle: F1-F10, Tab combat (modern-keys) and mouse-look act once on release, without repeating", ENH_TIMING, NULL, NULL },
     { "smooth-weapon-sway", "Smooth Weapon Sway: the weapon moves smoothly by the game clock instead of jittering randomly each frame", ENH_PRESENTATION, NULL, NULL },
+    { "steady-swimming", "Steady Swimming: removes random camera jolts in water while keeping the normal bobbing and sway", ENH_PRESENTATION, NULL, NULL },
 };
