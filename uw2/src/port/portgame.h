@@ -12,6 +12,11 @@
 #ifndef UW2_PORTGAME_H
 #define UW2_PORTGAME_H
 
+/* These ports support native desktop targets only. */
+#ifdef __EMSCRIPTEN__
+#error "WebAssembly/browser builds are not supported"
+#endif
+
 #define PORT_NAME "uw2port"
 #define PORT_GAME_MAIN uw2_main                 /* UWEDIT.C's main (compat.h) */
 #define PORT_DGROUP_PARA 0x65E9u

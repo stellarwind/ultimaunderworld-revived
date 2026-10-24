@@ -46,19 +46,9 @@
 /* Each block's length: the end its last label runs to. */
 #define FAR_BLOCK_LEN "0x1C820"
 #define CODE_BLOCK_LEN "0x2F3A0"
-#ifdef __EMSCRIPTEN__
-/* WebAssembly's objects (the web build): a data symbol has a segment, an offset in it and a
-   size, which must be set (.size: each label to its block's end), and .org does not grow a
-   data segment, so each block is a section of its own, filled with .skip. */
-#define BLOCK(n, here, len) ".section .data." #n ",\"\",@\n" ".p2align 4\n" ".globl " S(n) "\n" \
-                            ".type " S(n) ",@object\n" ".size " S(n) ", " len "\n" S(n) ":\n" here ":\n"
-#define TO(here, off) ".skip " here " + " off " - .\n"
-#define SIZE(n, len, off) ".type " S(n) ",@object\n" ".size " S(n) ", " len " - " off "\n"
-#else
 #define BLOCK(n, here, len) SECTION ".p2align 4\n" ".globl " S(n) "\n" S(n) ":\n" here ":\n"
 #define TO(here, off) ".org " here " + " off "\n"
 #define SIZE(n, len, off) ""
-#endif
 #define AT(n, off) ".globl " S(n) "\n" ALT(n) TO(HERE, #off) S(n) ":\n" SIZE(n, FAR_BLOCK_LEN, #off)
 
 __asm__(

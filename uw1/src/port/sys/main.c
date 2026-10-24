@@ -51,17 +51,6 @@ void port_fatal(const char *fmt, ...)
     vfprintf(stderr, fmt, ap);
     fputc('\n', stderr);
     va_end(ap);
-#ifdef __EMSCRIPTEN__
-    {
-        /* in a browser the page's end runs (plat_game_stop): an exit on the game's thread would
-           only stop that thread, leaving the picture frozen and the files unwritten */
-        char why[512];
-        va_start(ap, fmt);
-        vsnprintf(why, sizeof why, fmt, ap);
-        va_end(ap);
-        plat_game_stop(1, why);
-    }
-#endif
     exit(1);
 }
 
@@ -74,21 +63,11 @@ void rp_halt(void);
 void port_halt(const char *why)
 {
     rp_halt();
-#ifdef __EMSCRIPTEN__
-    fprintf(stderr, "uw1port: %s; the game stops here\n", why);
-#else
     fprintf(stderr, "uw1port: %s; the game stops here%s\n", why, exit_on_halt ? "" : " (the window stays)");
-#endif
     if (port_trace) port_backtrace();
     fflush(stdout);
-#ifdef __EMSCRIPTEN__
-    /* in a browser the game ends as if it had quit, its files written out and the menu back
-       (plat_game_stop, with the reason for the page), whatever --exit-on-halt says */
-    plat_game_stop(3, why);
-#else
     if (exit_on_halt) plat_game_exit(3);
     plat_game_park();
-#endif
 }
 
 /* --shot-at-flip K:FILE: the scan-out right after the game's K-th grPageFlip, so a screen
@@ -193,11 +172,7 @@ static const char help_text[] =
     "Plays Ultima Underworld from your own copy of the game (the GOG release's UW.EXE).\n"
     "\n"
     "Game and files:\n"
-#ifdef __EMSCRIPTEN__
-    "  --data DIR             game assets in the browser's virtual filesystem\n"
-#else
     "  Game assets must be in UW1 beside the program (UW.EXE, DATA, CRIT, CUTS, SOUND).\n"
-#endif
     "  --home DIR             writable folder (default: uw1port-data beside the program)\n"
     "Enhancements (off by default; docs/ENHANCEMENTS.md):\n"
     "  --enhance NAME[,NAME]  turn on changes the original game does not have, kept until\n"
@@ -268,7 +243,6 @@ static const char *absolute(const char *p, char *buf, size_t n)
 
 /* Desktop assets have one fixed location. Never search the registry, remembered
    settings, environment, working directory or CD images, and never extract a copy. */
-#ifndef __EMSCRIPTEN__
 static const char *local_data(char *buf, size_t n)
 {
     const char *base = plat_base_dir();
@@ -282,7 +256,6 @@ static const char *local_data(char *buf, size_t n)
     }
     return buf;
 }
-#endif
 
 static int home_dir(const char *p)
 {
@@ -342,12 +315,8 @@ int main(int argc, char *argv[])
     for (i = 1; i < argc; i++) {
         const char *a = argv[i];
         if (!strcmp(a, "--data") && i + 1 < argc) {
-#ifdef __EMSCRIPTEN__
-            data = argv[++i];
-#else
             fprintf(stderr, "uw1port: --data is not supported; put the game in UW1 beside the program\n");
             return 1;
-#endif
         }
         else if (!strcmp(a, "--home") && i + 1 < argc) home = argv[++i];
         else if (!strcmp(a, "--scale") && i + 1 < argc) {
@@ -410,11 +379,6 @@ int main(int argc, char *argv[])
     /* a recording made with cheats (format 6) runs them again: a test's too */
     if (replay && cheat_from_recording(replay) < 0) return 1;
     if (!home) {
-#ifdef __EMSCRIPTEN__
-        /* The browser keeps its files in its mounted virtual home. */
-        const char *h = getenv("HOME");
-        snprintf(home_buf, sizeof home_buf, "%s/.uw1port", h ? h : ".");
-#else
         /* Portable desktop storage: never fall back to HOME or AppData. SDL's base
            directory is independent of a shortcut's working directory. */
         const char *base = plat_base_dir();
@@ -423,7 +387,6 @@ int main(int argc, char *argv[])
             fprintf(stderr, "uw1port: cannot locate the program directory (give --home DIR)\n");
             return 1;
         }
-#endif
         home = home_buf;
     }
     /* A player's run, as opposed to a test's: it may ask with dialogs, remembers the game's
@@ -433,11 +396,7 @@ int main(int argc, char *argv[])
         fprintf(stderr, "uw1port: cannot create the home directory %s (--home)\n", home);
         return 1;
     }
-#ifdef __EMSCRIPTEN__
-    if (!data) data = "/game";  /* The web launcher supplies --data for its mounted assets. */
-#else
     if (!(data = local_data(data_buf, sizeof data_buf))) return 1;
-#endif
     if (plat_files_init(data, home)) {
         fprintf(stderr, "uw1port: %s is not a readable game directory\n", data);
         return 1;

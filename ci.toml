@@ -66,35 +66,6 @@ repocheck_exhume_checkout = '''
         with:
           submodules: true'''
 wf_prefix = ""
-# site.yml: the web build (docs/WEB.md, "Deploying") deployed to this repository's site when a
-# release is published, each game from its latest published release's tag
-web_site = "abedegno/underworld-exhumed-web"
-site_comment = '''
-# The web build deployed (docs/WEB.md, "Deploying"; docs/BUILDING.md, "Continuous integration"):
-# when a release is published (not a prerelease), each game's latest published final release
-# (uw1-vX.Y.Z, uw2-vX.Y.Z) is checked out at its tag and built there, for the web and the desktop
-# port that make webcheck needs; web/deploy.sh from this commit assembles the site with this
-# commit's page, packs the bundles' game files and MT-32 ROMs, checks it, and force-pushes it to
-# the gh-pages branch of abedegno/underworld-exhumed-web with the deploy key WEB_DEPLOY_KEY. By hand
-# (workflow_dispatch) it is a dry run unless push is set. It needs both private bundles.'''
-site_if = "vars.UW1_CI_ASSETS == 'true'"
-site_games = "uw1 uw2"
-site_checkout_submodules = "          submodules: true"
-site_exhume = "exhume"
-site_npm_ci = "npm ci --no-audit --no-fund --prefix exhume"
-site_emsdk_script = "exhume/tools/setup-emsdk.sh"
-site_assets = '''
-      - uses: ./.github/actions/uw1-assets
-        with:
-          deploy-key: ${{ secrets.UW1_ASSETS_DEPLOY_KEY }}
-          age-key: ${{ secrets.UW1_ASSETS_AGE_KEY }}
-      - uses: ./.github/actions/uw2-assets
-        with:
-          deploy-key: ${{ secrets.UW2_ASSETS_DEPLOY_KEY }}
-          age-key: ${{ secrets.UW2_ASSETS_AGE_KEY }}'''
-site_data = '"$UW1_DATA" "$UW2_DIR" "$MT32_ROMS"'
-site_cleanup = '"$RUNNER_TEMP/uw1-assets" "$RUNNER_TEMP/uw1-ci-assets" "$RUNNER_TEMP/uw1-assets-deploy-key" "$RUNNER_TEMP/uw2-assets" "$RUNNER_TEMP/uw2-ci-assets" "$RUNNER_TEMP/uw2-assets-deploy-key"'
-
 [[games]]
 test = "make -C uw1 test"
 test_full = "make -C uw1 test-full"
@@ -127,10 +98,6 @@ golden_dir = "uw1/tests/replay/golden"
 coverage_doc = "uw1/docs/COVERAGE.md"
 coverage_data = "uw1/build/coverage/all.profdata"
 libs_args = " uw1/tools/libs"
-web_libs_dir = "uw1/tools/libs-web"
-web_libs_script = "exhume/tools/setup-libs.sh"
-web_emsdk_script = "exhume/tools/setup-emsdk.sh"
-web_make = "make -C uw1 web"
 sound_args = " uw1/tools/nuked-opl3"
 node_cache_path = "        cache-dependency-path: exhume/package-lock.json"
 npm_ci = "npm ci --no-audit --no-fund --prefix exhume"
@@ -431,10 +398,6 @@ golden_dir = "uw2/tests/replay/golden"
 coverage_doc = "uw2/docs/COVERAGE.md"
 coverage_data = "uw2/build/coverage/all.profdata"
 libs_args = ""
-web_libs_dir = "uw2/tools/libs-web"
-web_libs_script = "exhume/tools/setup-libs.sh"
-web_emsdk_script = "exhume/tools/setup-emsdk.sh"
-web_make = "make -C uw2 web"
 sound_args = ""
 node_cache_path = "        cache-dependency-path: uw2/package-lock.json"
 npm_ci = "npm ci --no-audit --no-fund --prefix uw2"

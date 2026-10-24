@@ -6,5 +6,4 @@ symbols.tsv.bak
 .venv/
 node_modules/
 tools/libs/
-tools/libs-web/
 tools/nuked-opl3/

@@ -16,19 +16,6 @@ void read_uw_cfg(int *music, int *speech);  /* uwcfg.c */
 int write_uw_cfg(const char *spec);
 extern const char *port_home;
 
-/* a row with no tab on the web, where it cannot work: a row whose tab is -1 is on no tab, never
-   drawn or reached. Window scale (the browser's window is not the port's to size);
-   MT-32 ROMs (a browser has no host folders to pick: the page gives the port its packed files);
-   Fullscreen, which the page's own button does: a browser enters full screen only from the page's
-   handler of a click or key, and the settings screen's input reaches the port later, from SDL's
-   queue on the next frame, so the row could only fail (and SDL would make the canvas full screen
-   without the page's buttons over it). */
-#ifdef __EMSCRIPTEN__
-#define WEB_HIDDEN(tab) (-1)
-#else
-#define WEB_HIDDEN(tab) (tab)
-#endif
-
 /* The rows, in each tab's order; the display rows read each other's values */
 enum { R_MUSIC, R_SPEECH, R_ROMS, R_VOLUME, R_MOUSE, R_LOOK, R_FULL, R_SCALE, R_ASPECT, R_INTEGER, R_START };
 
@@ -138,7 +125,7 @@ const struct setting port_settings[] = {
                     .def = 3, .restart = 1, .get = music_get, .put = music_put },
     [R_SPEECH]  = { .tab = SET_TAB_SOUND, .label = "Speech", .kind = SET_CYCLE, .names = speech_names, .stored = speech_cards,
                     .def = 1, .restart = 1, .get = speech_get, .put = speech_put },
-    [R_ROMS]    = { .tab = WEB_HIDDEN(SET_TAB_SOUND), .label = "MT-32 ROMs", .kind = SET_FOLDER, .key = "mt32-roms", .restart = 1,
+    [R_ROMS]    = { .tab = SET_TAB_SOUND, .label = "MT-32 ROMs", .kind = SET_FOLDER, .key = "mt32-roms", .restart = 1,
                     .check = roms_check, .refuse = "That folder does not hold MT-32 or CM-32L ROMs",
                     .show = roms_show },
     [R_VOLUME]  = { .tab = SET_TAB_SOUND, .label = "Volume", .kind = SET_SLIDER, .key = "volume", .lo = 0, .hi = 100, .step = 10,
@@ -147,9 +134,9 @@ const struct setting port_settings[] = {
                     .stored = mouse_stored, .def = 0, .apply = apply_mouse },
     [R_LOOK]    = { .tab = SET_TAB_CONTROLS, .label = "Mouse-look speed", .kind = SET_SLIDER, .key = "look-speed", .lo = 10,
                     .hi = 400, .step = 10, .def = 100, .apply = mouse_look_speed },
-    [R_FULL]    = { .tab = WEB_HIDDEN(SET_TAB_DISPLAY), .label = "Fullscreen", .kind = SET_BOOL, .key = "fullscreen", .def = 0,
+    [R_FULL]    = { .tab = SET_TAB_DISPLAY, .label = "Fullscreen", .kind = SET_BOOL, .key = "fullscreen", .def = 0,
                     .apply = apply_display },
-    [R_SCALE]   = { .tab = WEB_HIDDEN(SET_TAB_DISPLAY), .label = "Window scale", .kind = SET_CYCLE, .key = "scale", .names = scale_names,
+    [R_SCALE]   = { .tab = SET_TAB_DISPLAY, .label = "Window scale", .kind = SET_CYCLE, .key = "scale", .names = scale_names,
                     .stored = scale_stored, .def = 2, .apply = apply_display, .limit = scale_limit },
     [R_ASPECT]  = { .tab = SET_TAB_DISPLAY, .label = "4:3 aspect", .kind = SET_BOOL, .key = "aspect", .def = 1,
                     .apply = apply_display },
@@ -187,12 +174,7 @@ void port_settings_list(FILE *f)
    command line gave), the volume and the mouse-look speed applied. */
 void port_settings_start(int *fullscreen, int *scale, int *aspect, int *integer_scale)
 {
-#ifdef __EMSCRIPTEN__
-    /* the row is hidden on the web (above): a fullscreen=1 kept by an earlier page is not used */
-    if (fullscreen) *fullscreen = 0;
-#else
     if (fullscreen) *fullscreen = settings_value(R_FULL);
-#endif
     if (scale) *scale = settings_value(R_SCALE) + 1;
     if (aspect) *aspect = settings_value(R_ASPECT);
     if (integer_scale) *integer_scale = settings_value(R_INTEGER);

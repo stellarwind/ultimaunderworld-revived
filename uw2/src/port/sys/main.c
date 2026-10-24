@@ -51,17 +51,6 @@ void port_fatal(const char *fmt, ...)
     vfprintf(stderr, fmt, ap);
     fputc('\n', stderr);
     va_end(ap);
-#ifdef __EMSCRIPTEN__
-    {
-        /* in a browser the page's end runs (plat_game_stop): an exit on the game's thread would
-           only stop that thread, leaving the picture frozen and the files unwritten */
-        char why[512];
-        va_start(ap, fmt);
-        vsnprintf(why, sizeof why, fmt, ap);
-        va_end(ap);
-        plat_game_stop(1, why);
-    }
-#endif
     exit(1);
 }
 
@@ -74,21 +63,11 @@ void rp_halt(void);
 void port_halt(const char *why)
 {
     rp_halt();
-#ifdef __EMSCRIPTEN__
-    fprintf(stderr, "uw2port: %s; the game stops here\n", why);
-#else
     fprintf(stderr, "uw2port: %s; the game stops here%s\n", why, exit_on_halt ? "" : " (the window stays)");
-#endif
     if (port_trace) port_backtrace();
     fflush(stdout);
-#ifdef __EMSCRIPTEN__
-    /* in a browser the game ends as if it had quit, its files written out and the menu back
-       (plat_game_stop, with the reason for the page), whatever --exit-on-halt says */
-    plat_game_stop(3, why);
-#else
     if (exit_on_halt) plat_game_exit(3);
     plat_game_park();
-#endif
 }
 
 /* --shot-at-flip K:FILE: the scan-out right after the game's K-th grPageFlip, so a screen
@@ -414,11 +393,6 @@ int main(int argc, char *argv[])
     /* a recording made with cheats (format 6) runs them again: a test's too */
     if (replay && cheat_from_recording(replay) < 0) return 1;
     if (!home) {
-#ifdef __EMSCRIPTEN__
-        /* The browser keeps its files in its mounted virtual home. */
-        const char *h = getenv("HOME");
-        snprintf(home_buf, sizeof home_buf, "%s/.uw2port", h ? h : ".");
-#else
         /* Portable desktop storage: never fall back to HOME or AppData. SDL's base
            directory is independent of a shortcut's working directory. */
         const char *base = plat_base_dir();
@@ -427,7 +401,6 @@ int main(int argc, char *argv[])
             fprintf(stderr, "uw2port: cannot locate the program directory (give --home DIR)\n");
             return 1;
         }
-#endif
         home = home_buf;
     }
     /* A player's run, as opposed to a test's: it may ask with dialogs, remembers the game's

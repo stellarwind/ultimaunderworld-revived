@@ -23,11 +23,6 @@
 #   make port          build and link the port; make port-debug the UBSan build
 #   make port-release  the build the players' packages are made from (PORT_ARCHS="--arch arm64
 #                      --arch x86_64" for a universal macOS build)
-#   make web           the WebAssembly build (portbuild.py --web, with emsdk in ~/emsdk and the
-#                      libraries SETUP_WEB=1 setup-libs.sh built in tools/libs-web): build/web for
-#                      the page, build/web-node/uw1port for Node.js
-#   make webcheck      make web, then every session against its golden in the Node.js build
-#                      (an hour's --exit-after, EXHUME_EXIT_AFTER: it runs far slower)
 #   make package       package the release build for this OS into build/dist (tools/package.py;
 #                      PACKAGE_ARGS="--strict --appimage" as CI does)
 #   make icons         the icon files from their SVG sources ([package]; tools/icons.py)
@@ -69,7 +64,7 @@ HOOK ?= make check
 PORT := $(PY) $(EXHUME)/tools
 
 .PHONY: game exact check check-all fast boot hooks repocheck help \
-        setup-exhume setup-port setup-libs setup-sound port-check port port-debug port-release web webcheck package icons \
+        setup-exhume setup-port setup-libs setup-sound port-check port port-debug port-release package icons \
         test test-full verify blackbox golden golden-check fuzz vectors coverage
 .DEFAULT_GOAL := game
 
@@ -123,12 +118,6 @@ port-debug:
 
 port-release:
 	@$(PORT)/portbuild.py --config exhume.toml --release $(PORT_ARCHS)
-
-web:
-	@PATH="$(HOME)/emsdk:$(HOME)/emsdk/upstream/emscripten:$$PATH"; $(PORT)/portbuild.py --config exhume.toml --web
-
-webcheck: web port
-	@EXHUME_EXIT_AFTER=3600000 EXHUME_PORT=$(CURDIR)/build/web-node/uw1port EXHUME_CHEAT_PORT=$(CURDIR)/build/port/uw1port $(PORT)/replay.py --config exhume.toml verify all
 
 package:
 	@$(PORT)/package.py --config exhume.toml $(PACKAGE_ARGS)

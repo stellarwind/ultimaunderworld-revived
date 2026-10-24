@@ -587,7 +587,7 @@ def port_env():
 
 def exit_after(cmd):
     """CMD with its --exit-after limit (milliseconds of the port's clock) replaced by
-    $EXHUME_EXIT_AFTER when that is set: the web build's Node.js replays (make webcheck) run
+    $EXHUME_EXIT_AFTER when that is set: slower test environments run
     some sessions twenty to eighty times slower than the desktop's, close to the usual limit."""
     v = os.environ.get('EXHUME_EXIT_AFTER')
     if v and '--exit-after' in cmd:

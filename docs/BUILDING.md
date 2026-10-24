@@ -59,8 +59,6 @@ uw1/build/port/uw1port --data ~/UWGOG/UW1   # or names it
 
 Each game's BUILDING.md has its options, its sound cards and where it keeps saves and recordings. [PORT.md](PORT.md) is how the ports work.
 
-The ports also build to WebAssembly for a web page, and a site with them can be deployed: see [WEB.md](WEB.md).
-
 ## Input scripts
 
 The ports take `--input-script FILE`, for tests: keys and mouse events at set times, fed in as a player's would be (Exhume's `runtime/port/sys/inscript.c`), so a hidden run can record a session with no one at the keyboard. One event a line, at a time in milliseconds of the game's PIT clock (18.2 Hz, so about 55 ms apart at best) from the start; `#` starts a comment:
@@ -96,7 +94,7 @@ A test sometimes needs a game state that scripted play cannot reach cheaply: a c
 
 Each goes through the game's own routines, so the state it leaves is one the game could hold itself, and a game saved after it loads in DOS (checked: UW1's `setup/tidy-heavy` save, and saves after `goto`, `set` and `give` in both games, each loaded in the replay DOS build). The commands are the game's (`src/port/sys/cheats.c`); Exhume's `runtime/port/sys/cheat.c` reads, gates, records and replays them. A cheat's time only lets it go: it runs on the game's thread at the main loop's next pass in which the game is on its 3D view with nothing on the cursor and no move pending (`port_cheat_point`, `src/game/MAINLOOP.C`, port only), so a cheat waits out a fade, a level change or a menu.
 
-Cheats are a test's alone. A script with a `cheat` line is refused unless the environment has `EXHUME_TEST_CHEATS=1`, and the web build refuses it always, so that no script passed to a player's build can change its game. Each cheat logs `cheat: TEXT (not as DOS)`. A recording made with cheats in its script is format 6 (Exhume's `runtime/replay/replay.c`): format 5's enhancements chunk, always there, and each cheat where it ran, by the number of the main loop's pass, so its replay runs them again at the same passes and is as exact as any other. Its replay also needs `EXHUME_TEST_CHEATS=1`, which Exhume's `tools/replay.py` sets for a format 6 recording, and DOS never replays one.
+Cheats are a test's alone. A script with a `cheat` line is refused unless the environment has `EXHUME_TEST_CHEATS=1`, so that no script passed to a player's build can change its game. Each cheat logs `cheat: TEXT (not as DOS)`. A recording made with cheats in its script is format 6 (Exhume's `runtime/replay/replay.c`): format 5's enhancements chunk, always there, and each cheat where it ran, by the number of the main loop's pass, so its replay runs them again at the same passes and is as exact as any other. Its replay also needs `EXHUME_TEST_CHEATS=1`, which Exhume's `tools/replay.py` sets for a format 6 recording, and DOS never replays one.
 
 A session that uses cheats is a setup session, `tests/replay/setup/NAME/` (`session.script`, `session.rec`, `session.cfg`), made by the port from its script with Exhume's `tools/enhcheck.py setup record NAME` and checked by `enhcheck.py setup check` (its cheats ran, and two replays write the same saved game). Another session names it in `stage_from` (`[replay] stage_from`, or an enhanced session's `stage_from` file) as `setup/NAME`: the saved game it writes is then made by the port's replay of it, in `replay.py golden` and `verify` alike, and the golden keeps that saved game's digests. So a session recorded in DOS can start from it, and DOS still judges what that session does. UW1's `tooheavy` is one ([BUILDING.md](../uw1/docs/BUILDING.md#the-sessions)).
 
@@ -111,7 +109,6 @@ One set of workflows in `.github/` serves both games. They are rendered from Exh
 | `accuracy.yml` | pushes to `main`, pull requests from branches of this repository, and by hand | per game: the gate and `make test` on Ubuntu 24.04; every session against its golden in the port built on Windows and on macOS; the players' Windows zip, unpacked, started with only Windows's own folders on the PATH and replaying every session, on Windows Server 2022 (Exhume's `tools/pkgcheck.py`); and on all three, the MT-32 checks below | yes |
 | `nightly.yml` | 03:17 UTC daily, and by hand | per game: `make test-full` (UW1's with dos-mcp's Chrome, for its js-dos-only `sound` golden); and `make test` against Exhume's latest `master` instead of the pinned submodule (`exhume-master`), so a change in Exhume that would break a game shows within a day. A regenerated golden that differs from the committed one fails the run, and the artifact holds the list, the changed screens and the text diff of each `golden.json` (`golden-diff.txt`, printed in the log too) | yes |
 | `release.yml` | a tag `uw1-v*` or `uw2-v*`, weekly on Mondays, and by hand | that game's packages for macOS, Linux and Windows, each then tested as below; for a tag push, once every test passes, a draft release (a weekly or hand-made run never makes one, even on a tag) | the tests do (Apple's secrets sign and notarise the macOS app) |
-| `site.yml` | a release published (not a prerelease), and by hand | the web build deployed ([WEB.md](WEB.md), "Deploying"): each game's latest published final release built from its own tag, checked, and pushed to the `gh-pages` branch of `abedegno/underworld-exhumed-web` with `WEB_DEPLOY_KEY`; by hand a dry run unless `push` is ticked (`skip_replays` leaves out `make webcheck`) | yes, both, for the game files and the ROMs |
 
 ### The MT-32 checks
 
@@ -134,8 +131,7 @@ The gates and the replays need each game and the Borland toolchain, which cannot
 | --- | --- |
 | `UW1_ASSETS_DEPLOY_KEY`, `UW2_ASSETS_DEPLOY_KEY` | the private half of an ed25519 deploy key that can only read that bundle repository |
 | `UW1_ASSETS_AGE_KEY`, `UW2_ASSETS_AGE_KEY` | the age secret key; the owner keeps it in the macOS Keychain, services `uw1-ci-assets-age` and `uw2-ci-assets-age` |
-| `UW1_CI_ASSETS` (a variable) | `true` turns on UW1's bundle jobs, and `site.yml` |
-| `WEB_DEPLOY_KEY` | the private half of an ed25519 deploy key with write access to the site repository `abedegno/underworld-exhumed-web` and nothing else (`site.yml`) |
+| `UW1_CI_ASSETS` (a variable) | `true` turns on UW1's bundle jobs |
 
 The local actions `.github/actions/uw1-assets` and `uw2-assets` clone the bundle with the deploy key, written to `$RUNNER_TEMP` with mode 600 and deleted once the clone is done. Each game's `tools/ci-assets.sh` then decrypts it into `$RUNNER_TEMP`, with the age key on age's standard input, checks every file against `SHA256SUMS`, and prints only a count.
 
@@ -157,7 +153,6 @@ To make a new bundle (new game files, say):
 
 A new deploy key: `ssh-keygen -t ed25519 -N '' -f deploy`, add `deploy.pub` read-only to the bundle repository, `gh secret set UWn_ASSETS_DEPLOY_KEY < deploy`, then remove the old key and delete both files.
 
-A new deploy key for the site: the same, with `deploy.pub` added to `abedegno/underworld-exhumed-web` with write access, and `gh secret set WEB_DEPLOY_KEY < deploy`. `site.yml` writes it to `$RUNNER_TEMP` with mode 600 only for a push, uses it through `GIT_SSH_COMMAND` with GitHub's host key alone, and deletes it, with the decrypted bundles and the games' trees, in its last step, which always runs.
 
 ## Releases
 
