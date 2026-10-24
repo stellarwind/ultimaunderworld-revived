@@ -2,24 +2,20 @@
 
 For players. Each release's notes are drafted from here. Releases are tagged `uw1-vX.Y.Z`.
 
-## Unreleased
+## 1.1.0 (24 October 2026)
+
+This fork's first release, with a Windows x64 package.
 
 - **New:** optional `smooth-weapon-sway` replaces the random weapon shake sampled each 3D frame with a smooth sway driven by the 256 Hz game clock. Only the draw offset changes; original random-number consumption, weapon state, attack frames and charge timing are preserved.
 
 - **New:** with `modern-keys`, Tab toggles combat stance (draw/sheath) using the original F5 action. With `single-action-toggle` enabled, it acts once on release without repeating. Shift+Tab and Tab outside gameplay retain their original actions.
 
-## 1.1.0 (24 October 2026)
-
-This fork's first release, with a Windows x64 package.
-
-- **New:** Single Action Toggle (`single-action-toggle`), an optional enhancement in the Enhancements tab. F1-F10 and the physical backtick/tilde mouse-look key activate once on release. Holding them no longer repeatedly toggles actions. Movement and ordinary text keys retain repeat, and opening settings or losing focus cancels pending toggle actions. Mouse-look must also be enabled for its toggle key.
+- **New:** Single Action Toggle (`single-action-toggle`), an optional enhancement in the Enhancements tab. F1-F10, Tab combat (with modern-keys), and the physical backtick/tilde mouse-look key activate once on release. Holding them no longer repeatedly toggles actions. Movement and ordinary text keys retain repeat, and opening settings or losing focus cancels pending toggle actions. Mouse-look must also be enabled for its toggle key.
 - **Fixed:** the port now remembers the window's position, size and maximized state. Restoring a maximized window returns to its previous normal rectangle. Fullscreen and the settings panel's temporary resize do not overwrite that rectangle, and a rectangle on a disconnected monitor is fitted onto an available display. Placement is stored as `window-geometry` and `window-maximized` in the local settings file.
 - **Changed:** UW1 reads original game assets only from `UW1` beside `uw1port.exe`, containing `UW.EXE` and the complete `DATA`, `CRIT`, `CUTS` and `SOUND` folders. Automatic game searches, CD-image extraction, the Game folder picker and the desktop `--data` option are removed.
 - **Changed:** writable game files, saves and settings default to `uw1port-data` beside the executable. There is no automatic AppData or user-profile fallback; an unwritable local folder causes startup to fail. `UW1PORT_HOME` is ignored, while explicit `--home DIR` remains available.
 - **Removed:** automatic session recording, session snapshots, the Record sessions setting and the `--record`/`--no-recording` switches. Developer replay support remains.
 - **Removed:** this project's browser launcher, WebAssembly targets, web deployment workflow and browser-only adapters. The native SDL renderer remains.
-- **Checked:** keyboard regression tests, window-placement regression tests, real Windows restarts in maximized and normal states, settings-panel resize recovery, release DLL packaging and repository checks. Full DOS byte-match/replay gates and macOS/Linux execution were not rerun for this release.
-- **Dependency:** Exhume remains pinned, unchanged, at `a34316463c230bafa3d4f0aa3b894a574e5fc738`. It supplies build/decompilation tools and runtime code compiled into the port, including SDL integration, portability, DOS hardware emulation and sound support.
 
 **Installation and upgrade:** extract the Windows package into a writable folder. Place your own original game files in its adjacent `UW1` folder. Game files and MT-32 ROMs are not included. Existing `UW1` and `uw1port-data` folders can stay in place when replacing the executable and DLLs. For an older installation, copy your settings, `DATA` overrides and `SAVE0`-`SAVE4` from the former home folder into `uw1port-data`; the port does not migrate or delete old files automatically. Enable Single Action Toggle in Enhancements and restart, or run `uw1port.exe --enhance single-action-toggle`.
 
@@ -59,5 +55,4 @@ The first release of the native port of *Ultima Underworld: The Stygian Abyss* f
 - **Improved:** the program no longer keeps a processor core busy while the game waits for its clock: much lower CPU use, quieter fans and longer battery life, with the game playing exactly as before.
 - **Improved:** the cutscenes (the intro above all) and conversations take far less processor time: the expanded-memory emulation no longer copies a page out and back in each time the game maps the page it already has, which it does millions of times a minute there.
 - Ten recorded DOS sessions replay in it identically to DOS, on all three systems.
-- **Checked:** the packages are tested before release on nine systems (Windows Server 2022 and 2025, macOS 14, 15 and 15 on Intel, Ubuntu 22.04 and 24.04, Debian 12, Fedora 41), replaying the recorded sessions from the package itself, with the MT-32 music checked too.
 - **Fixed before release:** the same two problems found in the UW2 port in October 2026: a freeze for good after the program was paused for a second or more, and runaway drawing when vsync is ignored or the window is in the background.
