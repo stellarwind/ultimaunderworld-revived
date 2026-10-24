@@ -6,6 +6,8 @@ For players. Each release's notes are drafted from here. Releases are tagged `uw
 
 This fork's first release, with a Windows x64 package.
 
+- **Changed:** `fast-panels` also skips the fade-out and fade-in when returning from the map to gameplay.
+
 - **New:** optional `smooth-weapon-sway` replaces the random weapon shake sampled each 3D frame with a smooth sway driven by the 256 Hz game clock. Only the draw offset changes; original random-number consumption, weapon state, attack frames and charge timing are preserved.
 
 - **New:** with `modern-keys`, Tab toggles combat stance (draw/sheath) using the original F5 action. With `single-action-toggle` enabled, it acts once on release without repeating. Shift+Tab and Tab outside gameplay retain their original actions.

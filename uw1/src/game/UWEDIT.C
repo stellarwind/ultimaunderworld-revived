@@ -69,6 +69,7 @@
 #include "view3d.h"
 #ifndef __TURBOC__
 void port_mouse_look_screen(int leaving, int is_view);     /* ui/MOUSE.C, port only */
+static int port_fast_map_return;
 #endif
 
 /* Declared in each file that uses it, its own way (no header). */
@@ -299,6 +300,9 @@ void far change_screen(int mode)
    For any screen but the 3D view every change bit but 0 is set, to redraw in full. */
 void far newscr(int mode)
 {
+#ifndef __TURBOC__
+    int previous_mode = scrmode;
+#endif
     if (scrnum != -1 && editor_dispatch[scrnum][15])
         editor_dispatch[scrnum][15]();
     if (mode >= 0)
@@ -306,8 +310,15 @@ void far newscr(int mode)
     else
         mode = lastscrmode;
     change_screen(mode);
+#ifndef __TURBOC__
+    port_fast_map_return = previous_mode == MODE_MAP && mode == MODE_GAME
+        && ENHANCED(ENH_FAST_PANELS);
+#endif
     if (editor_dispatch[scrnum][0])
         editor_dispatch[scrnum][0]();
+#ifndef __TURBOC__
+    port_fast_map_return = 0;
+#endif
     if (mode != 1)
         editchng(0x7FFE);
 }
@@ -330,7 +341,12 @@ void far strt_demscr(void)
     demous_player();
     place_3d_view(0x34, 0xB4, 0xAC, 0x71);
     FAR_COPY((unsigned char far *)pal, palette, 0x300);
+#ifndef __TURBOC__
+    /* Fast Panels skips only the map-to-game palette transition. */
+    fadeout(pal, port_fast_map_return ? 0 : 2);
+#else
     fadeout(pal, 2);
+#endif
     if (!LoadBitMap_ovr141_0(-1, "DATA\\main.byt"))
         pfatal_code(ERR_READ | 0xB);
     init_gamedisp();
@@ -341,7 +357,11 @@ void far strt_demscr(void)
     send_FB();
     mouse_show();
     read_quikpal(PAL_GAME, pal);
+#ifndef __TURBOC__
+    fadein(pal, port_fast_map_return ? 0 : 2);
+#else
     fadein(pal, 2);
+#endif
     CHECKPOINT(5);                      /* the first game screen, faded in */
 }
 

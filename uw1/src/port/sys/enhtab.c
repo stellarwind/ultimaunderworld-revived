@@ -8,7 +8,7 @@
 const struct enhance_flag enhance_table[ENH_COUNT] = {
     { "skip-intro", "Starts at the main menu, without the title or the introduction", ENH_TIMING, UH, NULL },
     { "wrap-menu", "The start menu and the saved games wrap from the last item to the first", ENH_PRESENTATION, UH, NULL },
-    { "fast-panels", "The right-hand panel slides twice as fast", ENH_TIMING, UH, NULL },
+    { "fast-panels", "The right-hand panel slides twice as fast; closing the map skips the fades", ENH_TIMING, UH, NULL },
     { "free-heading", "Sliding along a wall no longer turns your view", ENH_GAMEPLAY, UH, NULL },
     { "subtitles", "Cutscenes show their text while the speech plays", ENH_PRESENTATION, UH, "UW2" },
     { "skill-messages", "Says which skill a skill point or a trainer raised, and to what", ENH_PRESENTATION, UH, "UW2" },

@@ -14,7 +14,7 @@ They are kept in the settings file (`enhance=` in `uw1port.cfg` or `uw2port.cfg`
 |---|---|---|---|---|
 | `skip-intro` | UW1, UW2 | timing | Starts at the main menu, without the title or the introduction the game plays when there are no saved games (the menu's Introduction still plays it) | the idea from [UltimaHacks](https://github.com/JohnGlassmyer/UltimaHacks) |
 | `wrap-menu` | UW1, UW2 | presentation | In the start menu and the saved games, up from the first item goes to the last and down from the last to the first | the idea from [UltimaHacks](https://github.com/JohnGlassmyer/UltimaHacks) |
-| `fast-panels` | UW1, UW2 | timing | The right-hand panel slides twice as fast | the idea from [UltimaHacks](https://github.com/JohnGlassmyer/UltimaHacks) |
+| `fast-panels` | UW1, UW2 | timing | The right-hand panel slides twice as fast; UW1 also skips the fades when closing the map | the panel speed idea from [UltimaHacks](https://github.com/JohnGlassmyer/UltimaHacks); map transition added by this fork |
 | `free-heading` | UW1, UW2 | gameplay | Sliding along a wall no longer turns your view to face it | the idea from [UltimaHacks](https://github.com/JohnGlassmyer/UltimaHacks) |
 | `subtitles` | UW2 | presentation | Cutscenes show their text while the speech plays (the introduction's lines are text only; spoken lines are in other cutscenes) | the idea from [UltimaHacks](https://github.com/JohnGlassmyer/UltimaHacks) |
 | `skill-messages` | UW2 | presentation | When a skill point or a trainer raises a skill, the conversation says which and to what | the idea from [UltimaHacks](https://github.com/JohnGlassmyer/UltimaHacks) |
