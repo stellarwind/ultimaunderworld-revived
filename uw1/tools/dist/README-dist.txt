@@ -29,7 +29,7 @@ The port plays the original game exactly. A few optional changes the original do
 
 Window size, position and maximized state are remembered in uw1port-data/uw1port.cfg. Fullscreen and temporary settings-panel sizes do not replace the normal window rectangle.
 
-Single Action Toggle: enable single-action-toggle in the Enhancements tab and restart, or run uw1port.exe --enhance single-action-toggle. F1-F10 and the mouse-look key (when mouse-look is enabled) act once on release without repeating. Movement and ordinary text entry keep repeating. Pending actions are cancelled when settings opens or focus is lost.
+Single Action Toggle: enable single-action-toggle in the Enhancements tab and restart, or run uw1port.exe --enhance single-action-toggle. F1-F10, Tab combat (when modern-keys is enabled), and the mouse-look key (when mouse-look is enabled) act once on release without repeating. Movement and ordinary text entry keep repeating. With modern-keys, Tab draws/sheathes the weapon just like F5. Pending actions are cancelled when settings opens or focus is lost.
 
 Window: --scale N sets the starting size (3), --no-aspect shows square pixels instead of the 4:3 shape of a CRT, --no-integer scales freely, --mouse lock captures the pointer as DOSBox does (Ctrl+F10 releases it). uw1port --help lists every option.
 

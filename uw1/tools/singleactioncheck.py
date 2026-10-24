@@ -77,6 +77,7 @@ static void reset(int enhanced, int look) {
     }
     for (i = 0x3B; i <= 0x44; ++i) Asc[i] = Asc[i + 128] = (unsigned char)(0x80 + i - 0x3B);
     Asc[0x11] = 'w'; Asc[0x11 + 128] = 'W';
+    Asc[0x0F] = 9; Asc[0x0F + 128] = 0xA3;
     Asc[0x29] = '`'; Asc[0x29 + 128] = '~';
     enhance_on = (enhanced ? 1u << ENH_SINGLE_ACTION_TOGGLE : 0) | (look ? 1u << ENH_MOUSE_LOOK : 0);
     now = 1000; key_time = 0; key_index = 0;
@@ -139,11 +140,29 @@ int main(void) {
         kbd_byte(0x3F); assert(read_input(array) == 0x84);
         kbd_tick_ms(600); assert(read_input(array) == 0x84);
         kbd_byte(0xBF); assert(read_input(array) == -1);
+        reset(1, 1);
+        enhance_on |= 1u << ENH_MODERN_KEYS;
+        kbd_byte(0x0F);
+        for (i = 0; i < 40; ++i) { kbd_tick_ms(100); assert(read_input(array) == -1); }
+        kbd_byte(0x8F); assert(read_input(array) == 9); assert(read_input(array) == -1);
+        kbd_byte(0x0F); port_single_action_cancel(); kbd_byte(0x8F);
+        assert(read_input(array) == -1);
+        kbd_byte(0x36); assert(read_input(array) == -1);
+        kbd_byte(0x0F); assert(read_input(array) == -1);
+        kbd_byte(0xB6); kbd_byte(0x8F);
+        assert(read_input(array) == (0xA3 | KEY_SHIFT));
+        reset(1, 1); /* Without modern-keys Tab stays an ordinary repeating key. */
+        kbd_byte(0x0F); assert(read_input(array) == 9);
+        kbd_tick_ms(600); assert(read_input(array) == 9);
+        reset(0, 1);
+        enhance_on |= 1u << ENH_MODERN_KEYS;
+        kbd_byte(0x0F); assert(read_input(array) == 9);
+        kbd_tick_ms(600); assert(read_input(array) == 9);
         reset(1, 0);  /* Grave remains a normal text key without mouse-look. */
         kbd_byte(0x29); assert(read_input(array) == '`');
         kbd_tick_ms(600); assert(read_input(array) == '`');
     }
-    puts("singleactioncheck: both input paths passed: F1-F10, grave/tilde, long holds, taps, overlap, modifiers, cancellation, movement/text repeat and enhancement off");
+    puts("singleactioncheck: both input paths passed: F1-F10, Tab/Shift+Tab, grave/tilde, long holds, taps, overlap, modifiers, cancellation, movement/text repeat and enhancement off");
     return 0;
 }
 """

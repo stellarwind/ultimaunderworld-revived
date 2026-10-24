@@ -82,7 +82,7 @@ extern unsigned char seg063[];
 enum { ENH_SKIP_INTRO, ENH_WRAP_MENU, ENH_FAST_PANELS, ENH_FREE_HEADING, ENH_SUBTITLES,
        ENH_SKILL_MESSAGES, ENH_PERSPECTIVE, ENH_FULL_SPRITES,
        ENH_WIDE_PITCH, ENH_MOUSE_LOOK, ENH_INVERT_LOOK, ENH_MODERN_KEYS, ENH_RUNE_KEYS,
-       ENH_TIDY_OBJECTS, ENH_RESTORE_AT_REST, ENH_SINGLE_ACTION_TOGGLE,
+       ENH_TIDY_OBJECTS, ENH_RESTORE_AT_REST, ENH_SINGLE_ACTION_TOGGLE, ENH_SMOOTH_WEAPON_SWAY,
        ENH_COUNT };
 /* --enhance modern-keys: the key code a lone left Shift gives (ui/MOUSE.C), unused by the game */
 #define PORT_KEY_LSHIFT 0xBF
@@ -95,6 +95,7 @@ void port_window_init(const char *home, int enabled, int restore_size,
 void port_window_tick(void);
 void port_window_save(void);
 void port_window_display(int fullscreen, int scale, int aspect, int integer_scale);
+int port_weapon_sway(int how, int swinging, unsigned ticks);
 int port_pitch_bound(void);                 /* game/PLAYER.C: the pitch's bound either way */
 
 #endif

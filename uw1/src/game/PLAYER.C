@@ -198,6 +198,7 @@ void far init_player(void)
 #endif
 #ifndef __TURBOC__
     if (ENHANCED(ENH_MODERN_KEYS)) {   /* port only: UltimaHacks' keys (ui/keys.c), its input-mode masks */
+        _input_addkey('\t', 1, 1, (InputFn)deal_with_icons);  /* Tab: draw/sheath, as F5; before the original pointer-warp binding */
         _input_addkey(' ', 0, 1, (InputFn)port_key_attack);
         _input_addkey('.', 3, 1, (InputFn)port_key_attack);
         _input_addkey(';', 6, 1, (InputFn)port_key_attack);

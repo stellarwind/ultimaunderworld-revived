@@ -1264,6 +1264,9 @@ void far do_fbuf_bms(void)
     unsigned char far *p;
     register int n;
     register int jig;
+#ifndef __TURBOC__
+    int draw_x;
+#endif
 
     Transparency = 1;
     if (setting[SCR_WEAPON] != WEAP_SHEATHED && weap_frame < 0x1C && last_weap > -1 && ShowStupidFirstPersonWeapon) {
@@ -1281,7 +1284,16 @@ void far do_fbuf_bms(void)
         wbuf = (unsigned char far *)MK_FP(ems_frame, 0x8000) + weap_offs[n];
         obj_inpage1 = 0xFF;
         p = grs_unpack((struct Bitmap far *)wbuf);
+#ifndef __TURBOC__
+        /* Only the drawn offset changes. The original jiggle above still consumes its
+           random numbers and updates wxo/wfo, keeping gameplay and swing timing intact. */
+        draw_x = wxo;
+        if (ENHANCED(ENH_SMOOTH_WEAPON_SWAY))
+            draw_x = port_weapon_sway(jig, setting[SCR_WEAPON] <= 2, (unsigned)*Time);
+        fbshow(p, weap_x[n] + draw_x, weap_y[n], wbuf[1], wbuf[2]);
+#else
         fbshow(p, weap_x[n] + wxo, weap_y[n], wbuf[1], wbuf[2]);
+#endif
     }
     pic_to_fbuf(ICON_3DWIN, 0x3E, 3);
     pic_to_fbuf(ICON_3DWIN + 0x1, 0, 0xD);

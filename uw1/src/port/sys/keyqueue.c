@@ -41,7 +41,8 @@ int port_single_action_key(int scan)
 {
     return ENHANCED(ENH_SINGLE_ACTION_TOGGLE) &&
            ((scan >= 0x3B && scan <= 0x44) ||
-            (scan == 0x29 && ENHANCED(ENH_MOUSE_LOOK)));
+            (scan == 0x29 && ENHANCED(ENH_MOUSE_LOOK)) ||
+            (scan == 0x0F && ENHANCED(ENH_MODERN_KEYS)));
 }
 
 int port_single_action_read(int *code)
@@ -220,7 +221,7 @@ int key(void)
             if (!D[0x1EB + bx]) {
                 /* Keep modifiers from the press, even when Shift/Ctrl/Alt comes up first.
                    The physical grave/tilde key always means the mouse-look toggle. */
-                int c = bx == 0x29 ? '`' : D[0x10 + bx];
+                int c = bx == 0x29 ? '`' : D[0x10 + bx + (D[0x1E2] ? 0x80 : 0)];
                 if (D[0x1E2] && (c & 0x80)) c |= 0x400;
                 if (D[0x1E3]) c |= 0x200;
                 if (D[0x1E4]) c |= 0x100;

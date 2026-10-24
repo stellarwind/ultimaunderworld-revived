@@ -2,6 +2,12 @@
 
 For players. Each release's notes are drafted from here. Releases are tagged `uw1-vX.Y.Z`.
 
+## Unreleased
+
+- **New:** optional `smooth-weapon-sway` replaces the random weapon shake sampled each 3D frame with a smooth sway driven by the 256 Hz game clock. Only the draw offset changes; original random-number consumption, weapon state, attack frames and charge timing are preserved.
+
+- **New:** with `modern-keys`, Tab toggles combat stance (draw/sheath) using the original F5 action. With `single-action-toggle` enabled, it acts once on release without repeating. Shift+Tab and Tab outside gameplay retain their original actions.
+
 ## 1.1.0 (24 October 2026)
 
 This fork's first release, with a Windows x64 package.
