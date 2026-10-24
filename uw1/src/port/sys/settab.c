@@ -28,7 +28,7 @@ static int scale_limit(void)
 static void apply_display(int unused)
 {
     (void)unused;
-    plat_set_display(settings_value(R_FULL), settings_value(R_SCALE) + 1, settings_value(R_ASPECT), settings_value(R_INTEGER));
+    port_window_display(settings_value(R_FULL), settings_value(R_SCALE) + 1, settings_value(R_ASPECT), settings_value(R_INTEGER));
 }
 
 /* The window's scale, a cycle and not a slider: dragging a slider that resizes the window would

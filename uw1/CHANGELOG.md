@@ -2,6 +2,21 @@
 
 For players. Each release's notes are drafted from here. Releases are tagged `uw1-vX.Y.Z`.
 
+## 1.1.0 (24 October 2026)
+
+This fork's first release, with a Windows x64 package.
+
+- **New:** Single Action Toggle (`single-action-toggle`), an optional enhancement in the Enhancements tab. F1-F10 and the physical backtick/tilde mouse-look key activate once on release. Holding them no longer repeatedly toggles actions. Movement and ordinary text keys retain repeat, and opening settings or losing focus cancels pending toggle actions. Mouse-look must also be enabled for its toggle key.
+- **Fixed:** the port now remembers the window's position, size and maximized state. Restoring a maximized window returns to its previous normal rectangle. Fullscreen and the settings panel's temporary resize do not overwrite that rectangle, and a rectangle on a disconnected monitor is fitted onto an available display. Placement is stored as `window-geometry` and `window-maximized` in the local settings file.
+- **Changed:** UW1 reads original game assets only from `UW1` beside `uw1port.exe`, containing `UW.EXE` and the complete `DATA`, `CRIT`, `CUTS` and `SOUND` folders. Automatic game searches, CD-image extraction, the Game folder picker and the desktop `--data` option are removed.
+- **Changed:** writable game files, saves and settings default to `uw1port-data` beside the executable. There is no automatic AppData or user-profile fallback; an unwritable local folder causes startup to fail. `UW1PORT_HOME` is ignored, while explicit `--home DIR` remains available.
+- **Removed:** automatic session recording, session snapshots, the Record sessions setting and the `--record`/`--no-recording` switches. Developer replay support remains.
+- **Removed:** this project's browser launcher, WebAssembly targets, web deployment workflow and browser-only adapters. The native SDL renderer remains.
+- **Checked:** keyboard regression tests, window-placement regression tests, real Windows restarts in maximized and normal states, settings-panel resize recovery, release DLL packaging and repository checks. Full DOS byte-match/replay gates and macOS/Linux execution were not rerun for this release.
+- **Dependency:** Exhume remains pinned, unchanged, at `a34316463c230bafa3d4f0aa3b894a574e5fc738`. It supplies build/decompilation tools and runtime code compiled into the port, including SDL integration, portability, DOS hardware emulation and sound support.
+
+**Installation and upgrade:** extract the Windows package into a writable folder. Place your own original game files in its adjacent `UW1` folder. Game files and MT-32 ROMs are not included. Existing `UW1` and `uw1port-data` folders can stay in place when replacing the executable and DLLs. For an older installation, copy your settings, `DATA` overrides and `SAVE0`-`SAVE4` from the former home folder into `uw1port-data`; the port does not migrate or delete old files automatically. Enable Single Action Toggle in Enhancements and restart, or run `uw1port.exe --enhance single-action-toggle`.
+
 ## 1.0.2 (14 October 2026)
 
 - **Fixed:** creating a female character crashed the game on choosing any portrait but the first (issue 8). DOS draws her; the port now does too.

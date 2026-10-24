@@ -515,7 +515,9 @@ int main(int argc, char *argv[])
     hooks.key = kbd_byte;
     hooks.pointer = mouse_event;
     hooks.lifecycle = on_lifecycle;
-    if (input_script) hooks.tick = inscript_tick;
+    port_window_init(home, interactive, !cl_scale, cfg.scale, cfg.aspect,
+                     input_script ? inscript_tick : NULL);
+    hooks.tick = port_window_tick;
     if (interactive) {
         port_home = home;
         hooks.drop = on_drop;
@@ -531,6 +533,7 @@ int main(int argc, char *argv[])
     }
     port_single_action_init();
     status = plat_run(&cfg, &hooks, game, NULL);
+    port_window_save();
     if (getenv("UW1PORT_POS_LOG")) port_report_motion();
     return status;
 }

@@ -90,6 +90,11 @@ int port_single_action_key(int scan);
 int port_single_action_read(int *code);
 void port_single_action_cancel(void);
 void port_single_action_init(void);
+void port_window_init(const char *home, int enabled, int restore_size,
+                      int scale, int aspect, void (*input_tick)(void));
+void port_window_tick(void);
+void port_window_save(void);
+void port_window_display(int fullscreen, int scale, int aspect, int integer_scale);
 int port_pitch_bound(void);                 /* game/PLAYER.C: the pitch's bound either way */
 
 #endif

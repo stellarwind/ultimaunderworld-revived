@@ -641,6 +641,7 @@ fast = [
     ["enhancements", "{python} {exhume}/tools/enhcheck.py --config {config} all", "port build"],
     ["settings screen", "{python} {exhume}/tools/setcheck.py --config {config} all", "port build"],
     ["player movement", "{python} {exhume}/tools/movecheck.py --config {config}", "port build"],
+    ["window placement", "{python} tools/windowcheck.py", "port build"],
     ["single action toggle", "{python} tools/singleactioncheck.py", "port build"],
     ["map notes", "{python} tools/notescheck.py --config {config}", "port build"],
 ]
@@ -656,6 +657,7 @@ full = [
     ["enhancements", "{python} {exhume}/tools/enhcheck.py --config {config} all", "port build"],
     ["settings screen", "{python} {exhume}/tools/setcheck.py --config {config} all", "port build"],
     ["player movement", "{python} {exhume}/tools/movecheck.py --config {config}", "port build"],
+    ["window placement", "{python} tools/windowcheck.py", "port build"],
     ["single action toggle", "{python} tools/singleactioncheck.py", "port build"],
     ["map notes", "{python} tools/notescheck.py --config {config}", "port build"],
     ["coverage report", "{python} {exhume}/tools/coverage.py --config {config}", "port build"],

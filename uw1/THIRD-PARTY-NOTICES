@@ -4,7 +4,7 @@ None of the libraries below is committed to the repository. The release packages
 
 SHIPPED IN THE RELEASE PACKAGES
 
-SDL3 3.4.16 (https://github.com/libsdl-org/SDL, tag release-3.4.16)
+SDL3 (https://github.com/libsdl-org/SDL; source builds: 3.4.16, Windows 1.1.0 package: MSYS2 3.4.18-1)
 The window, input and audio output. zlib licence. Copyright (C) 1997-2026 Sam Lantinga. Built from source by Exhume's tools/setup-libs.sh (macOS and Linux packages) or taken from MSYS2's mingw-w64-clang-x86_64-sdl3 package (Windows).
 
 Nuked OPL3 (https://github.com/nukeykt/Nuked-OPL3, commit 765ec962e473aeb767e4cba74ffdc8f588ffbfe8)
@@ -14,6 +14,9 @@ libmt32emu 2.8.3 (munt, https://github.com/munt/munt, tag libmt32emu_2_8_3)
 The emulated Roland MT-32 and CM-32L. GNU Lesser General Public License, version 2.1 or later. Copyright (C) 2003-2026 Dean Beeler, Jerome Fisher, Sergey V. Mikayev. Built unmodified from source as a shared library by Exhume's tools/setup-libs.sh.
 
 Windows packages only: the compiler's runtime from MSYS2's CLANG64 environment (libc++ and libunwind, Apache License 2.0 with LLVM Exceptions; winpthreads, from mingw-w64, MIT-style licences), whichever DLLs the program loads; the packaging copies their licence texts from their MSYS2 packages.
+
+GNU libiconv 1.19 (Windows 1.1.0 package: MSYS2 mingw-w64-clang-x86_64-libiconv 1.19-1)
+The character-set conversion library, loaded by a bundled Windows dependency as libiconv-2.dll. GNU Lesser General Public License, version 2.1 or later. Its license text is in licenses/libiconv/COPYING.LIB. The release's third-party-sources-1.1.0.tar.gz includes both the upstream source and the MSYS2 source package with its recipe and patches.
 
 Linux AppImage only: the AppImage type 2 runtime, release 20251108 (https://github.com/AppImage/type2-runtime, MIT licence, Copyright (c) 2004-23 probonopd), the small program at the start of the .AppImage file that mounts the rest and starts the port. It is a static executable that contains musl libc (MIT), libfuse 3 (GNU Lesser General Public License, version 2.1), squashfuse (BSD 2-clause) and zstd and zlib (BSD and zlib licences). appimagetool 1.9.1 (MIT) puts it there; appimagetool itself is not shipped. The runtime's source and build scripts at that release are in third-party-sources.tar.gz too, and running the AppImage with --appimage-extract unpacks the AppImage into a folder that runs without the runtime, so you may replace it, libfuse included, with your own build.
 
