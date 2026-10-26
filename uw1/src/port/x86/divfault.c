@@ -7,7 +7,9 @@
    INSTANCE.ASM's three return to the faulting code past the divide (they add 2 or 4 to the IP
    the CPU pushed), with AX = 7FFFh (or its negative) and DX = 0, and leave the flags as the
    iret restores them, the divide's; they are modelled here, and a fault in an instruction of
-   another length (which in DOS would resume in its middle) stops the port. The others are
+   another length (which in DOS would resume in its middle) stops the port. TMAPOPS's
+   L692C likewise resumes after a two-byte divide, saving BP at L692A and saturating AX
+   without incrementing INSTANCE's overflow counter. The others are
    recovery paths that drop the interrupt frame and jump on (INTERP.ASM, SMOOTH.ASM,
    TMAPOPS.ASM): the CPU's frame is pushed and the handler runs as translated code. */
 #include <stdio.h>
@@ -20,6 +22,16 @@ uint32_t asm_divfault(uint16_t seg, uint16_t ip, unsigned len)
     uint16_t h = (uint16_t)(seg063[0x4D5] | seg063[0x4D6] << 8);
     char why[120];
     switch (h) {
+    case 0x692C:                        /* TMAPOPS: +2, AX 7FFFh, DX 0, BP saved at L692A */
+        if (len != 2) break;
+        /* DOS's IRET resumes the faulting routine. Returning ASM_IRET through the
+           translated near-call dispatcher instead leaves SP at its pre-fault value
+           and parks the game (captured at TMAPOPS 643A, IDIV CX with CX=0). Model
+           this resumable handler here, as with INSTANCE's three below. */
+        ww(CODE004, 0x692A, BP);
+        AX = 0x7FFF;
+        DX = 0;
+        return 0;
     case 0x5BD1:                        /* overflow_handler_reg: +2, AX 7FFFh, DX 0, counted */
         if (len != 2) break;
         ww(CODE004, 0x5BCD, BP);        /* L5BCD, where the handler keeps BP */

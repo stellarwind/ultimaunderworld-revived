@@ -69,6 +69,9 @@ One switch for each enhancement the game has, all off by default. The selected o
 | Game folder (UW2 only) | The folder holding your copy of the game. A folder that is not the game is refused and the old one stays | `data` | next start | `--data DIR` (kept) |
 | Record sessions (UW2 only) | Each session's inputs go to `recordings/` in the home folder (the newest five are kept), so a crash can be replayed | `recording` | next start | `--no-recording` (this run only) |
 | Show this at start | Opens this screen before the game starts | `settings-at-start` | next start | none |
+| Dump debug state (UW1 only) | Click or press Enter to write a timestamped report in `debug/` in the home folder. On Windows it also writes a `.dmp` containing all process memory and thread stacks, plus a copy of the exact `.exe` for debugging. Works even when game logic freezes but F11 still responds. The row reports success or a partial capture; details go to the log and report. | none | at once | none |
+
+For a UW1 freeze, open F11, select **Game**, and activate **Dump debug state** before quitting. Send the matching `state-...` files from `uw1port-data/debug` (or your `--home` folder). These are diagnostic snapshots, not loadable saved games. The text report includes player physics, collision stepping and nearby tiles when the game reaches its pause point; if it is stuck elsewhere, Windows captures its memory and thread stacks without waiting for it. A full memory dump can be large and includes the game's loaded data. Each activation creates new files and leaves saves untouched.
 
 ## The command line and the file
 

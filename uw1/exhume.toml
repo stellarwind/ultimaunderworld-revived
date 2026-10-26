@@ -646,6 +646,7 @@ fast = [
     ["sound preferences and gain", "{python} tools/audiocheck.py", "port build"],
     ["window placement", "{python} tools/windowcheck.py", "port build"],
     ["enhanced input actions", "{python} tools/singleactioncheck.py", "port build"],
+    ["renderer divide recovery", "{python} tools/divfaultcheck.py", "port build"],
     ["enhanced input migration", "{python} tools/enhancedinputcheck.py", "port build"],
     ["map notes", "{python} tools/notescheck.py --config {config}", "port build"],
 ]
@@ -666,6 +667,7 @@ full = [
     ["sound preferences and gain", "{python} tools/audiocheck.py", "port build"],
     ["window placement", "{python} tools/windowcheck.py", "port build"],
     ["enhanced input actions", "{python} tools/singleactioncheck.py", "port build"],
+    ["renderer divide recovery", "{python} tools/divfaultcheck.py", "port build"],
     ["enhanced input migration", "{python} tools/enhancedinputcheck.py", "port build"],
     ["map notes", "{python} tools/notescheck.py --config {config}", "port build"],
     ["coverage report", "{python} {exhume}/tools/coverage.py --config {config}", "port build"],

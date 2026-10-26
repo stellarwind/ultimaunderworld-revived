@@ -17,7 +17,12 @@ int write_uw_cfg(const char *spec);
 extern const char *port_home;
 
 /* The rows, in each tab's order; the display rows read each other's values */
-enum { R_MUSIC, R_SPEECH, R_ROMS, R_VOLUME, R_MOUSE, R_LOOK, R_FULL, R_SCALE, R_ASPECT, R_INTEGER, R_START };
+enum { R_MUSIC, R_SPEECH, R_ROMS, R_VOLUME, R_MOUSE, R_LOOK, R_FULL, R_SCALE, R_ASPECT, R_INTEGER, R_START, R_DUMP };
+
+void port_debug_dump(int unused);
+/* A one-choice cycle is an action: Enter/click always calls apply, with no config key.
+   The callback updates the displayed result; it never changes a saved preference. */
+const char *port_debug_dump_names[] = { "Write dump", NULL };
 
 /* Window scale offers only the scales whose window fits the display (with 4:3 as it stands) */
 static int scale_limit(void)
@@ -143,6 +148,8 @@ const struct setting port_settings[] = {
     [R_INTEGER] = { .tab = SET_TAB_DISPLAY, .label = "Whole-number scaling", .kind = SET_BOOL, .key = "integer", .def = 1,
                     .apply = apply_display },
     [R_START]   = { .tab = SET_TAB_GAME, .label = "Show this at start", .kind = SET_BOOL, .key = "settings-at-start", .def = 1 },
+    [R_DUMP]    = { .tab = SET_TAB_GAME, .label = "Dump debug state", .kind = SET_CYCLE,
+                    .names = port_debug_dump_names, .apply = port_debug_dump },
 };
 const int port_settings_count = (int)(sizeof port_settings / sizeof port_settings[0]);
 

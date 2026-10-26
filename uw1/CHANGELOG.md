@@ -2,6 +2,11 @@
 
 For players. Each release's notes are drafted from here. Releases are tagged `uw1-vX.Y.Z`.
 
+## 1.2.0 (26 October 2026)
+
+- **Fixed:** a division by zero regression that could freeze game logic while drawing a clipped polygon, with F11 still working. The port now handles the renderer's divide recovery the same way as DOS, instead of stopping on its interrupt return.
+- **New:** F11's Game tab has **Dump debug state**. On Windows it captures process memory and thread stacks even if the game thread is stuck; diagnostic files go into the home folder's `debug` directory.
+
 ## 1.1.0 (24 October 2026)
 
 This fork's first release, with a Windows x64 package.
